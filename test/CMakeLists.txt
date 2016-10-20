@@ -13,7 +13,7 @@ add_executable(${TESTNAME} ${DIR_TESTS})
 #include_directories(${LIBRARY_OUTPUT_PATH_INC})
 #---------------------------------------------------------------------------
 #add lib path
-link_directories(${CMAKE_INSTALL_PREFIX}/src})
+#link_directories(${CMAKE_INSTALL_PREFIX}/src})
 #---------------------------------------------------------------------------
 #add link lib
 set(LIBNAME base)

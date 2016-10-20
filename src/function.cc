@@ -60,16 +60,10 @@ std::string BinToString(const unsigned char* buffer, size_t len)
         "F0", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "FA", "FB", "FC", "FD", "FE", "FF"
     };
 
-     /*char           bin[3];
-     std::string    result;
-     for(size_t i=0; i<len; i++)
-     {
-         snprintf(bin, 3, "%02X", buffer[i]);
-         result.append(bin);
-     }*/
 
      std::string result;
-    for(size_t i=0; i<len; i++)
+     result.reserve(len);
+     for(size_t i=0; i<len; i++)
         result.append(bin_char[buffer[i]]);
 
      return result;//RVO
