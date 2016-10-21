@@ -50,7 +50,7 @@ namespace CurrentThread
 class Thread
 {
 public:
-    typedef std::function<void (void)> ThreadFunc;
+    using ThreadFunc = std::function<void (void)>;
 
     Thread(ThreadFunc&& thread_func, const std::string& thread_name=std::string());
     Thread(Thread&& other);
