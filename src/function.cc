@@ -407,7 +407,7 @@ bool SaveFile(const std::string& path, const char* dat, size_t len)
 //---------------------------------------------------------------------------
 bool SaveFile(const char* path, const char* dat, size_t len)
 {
-    int fd = open(path, O_WRONLY|O_CREAT|O_TRUNC, 660);
+    int fd = open(path, O_WRONLY|O_CREAT|O_TRUNC, 0660);
     if(0 == fd)
         return false;
 
