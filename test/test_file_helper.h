@@ -10,17 +10,22 @@ namespace base
 namespace test
 {
 
-class TestAppendFile : public TestBase
+class TestFileHelper : public TestBase
 {
 public:
-    TestAppendFile()
+    TestFileHelper()
     {
     }
-    virtual ~TestAppendFile()
+    virtual ~TestFileHelper()
     {
     }
 
     virtual bool DoTest();
+
+private:
+    bool TestIllegal();
+    bool TestAppend();
+    bool TestTruncate();
 };
 
 }//namespace test

@@ -5,7 +5,7 @@
 #include "timestamp.h"
 #include "log_file.h"
 #include "function.h"
-#include "append_file.h"
+#include "file_help.h"
 //---------------------------------------------------------------------------
 namespace base
 {
@@ -120,7 +120,7 @@ void LogFile::CreateLogFile()
                 continue;
         }
 
-        log_file_ = std::make_shared<AppendFile>();
+        log_file_ = std::make_shared<FileHelper>();
         if(false == log_file_->Open(file_path))
         {
             log_file_.reset();
@@ -141,7 +141,7 @@ void LogFile::WriteLogFileTitle()
 {
     std::string title = title_ + "\r\n";
     if(log_file_)
-        log_file_->Append(title.c_str(), title.size());
+        log_file_->Write(title.c_str(), title.size());
 
     return;
 }
@@ -198,7 +198,7 @@ void LogFile::OnThreadWriteLog()
             CreateLogFile();
             if(log_file_)
             {
-                log_file_->Append(iter->data(), iter->size());
+                log_file_->Write(iter->data(), iter->size());
                 if(max_size_ <= log_file_->Size())
                 {
                     log_file_->Close();

@@ -11,7 +11,7 @@
 namespace base
 {
 
-class AppendFile;
+class FileHelper;
 class LogFile
 
 {
@@ -59,7 +59,7 @@ private:
     std::condition_variable     cond_;
     std::vector<std::string>    append_list_;
     std::vector<std::string>    write_list_;
-    std::shared_ptr<AppendFile> log_file_;
+    std::shared_ptr<FileHelper> log_file_;
 };
 
 }// namespace base
