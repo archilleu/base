@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #include <unistd.h>
-#include "test_log_file.h"
+#include "../src/logger.h"
+#include "test_logger.h"
 #include "../src/log_file.h"
 //---------------------------------------------------------------------------
 using namespace base;
@@ -11,16 +12,16 @@ const char* kLogInfo    = "hello, info";
 const char* kLogWarning = "hello, warning";
 const char* kLogError   = "hello, error";
 //---------------------------------------------------------------------------
-bool TestLogFile::DoTest()
+bool TestLogger::DoTest()
 {
-    if(false == Test_Illegal()) return false;
-    if(false == Test_Size())    return false;
-    if(false == Test_Date())    return false;
+    //if(false == Test_Illegal())     return false;
+    if(false == Test_Console())     return false;
+    //if(false == Test_Date())        return false;
 
     return true;
 }
 //---------------------------------------------------------------------------
-bool TestLogFile::Test_Illegal()
+bool TestLogger::Test_Illegal()
 {
     //初始化失败
     {
@@ -49,24 +50,35 @@ bool TestLogFile::Test_Illegal()
     return true;
 }
 //---------------------------------------------------------------------------
-bool TestLogFile::Test_Size()
+bool TestLogger::Test_Console()
 {
-    const char* path = "/tmp/test_log";
-    const char* name = "mylog_size";
-    LogFile log_file;
+    const char* logger_name = "haha";
+    auto logger = Logger::stdout_logger_mt(logger_name);
+    std::cout << "name:" << logger->name() << std::endl;
+    MY_ASSERT(logger->name() == logger_name);
 
-    size_t str_len = strlen(kLogWarning);
-    MY_ASSERT(true == log_file.Initialze("size 1 mb test", path, name, 1024*1024));
-    for(size_t i=0; i<(1024*1024/str_len); i++)
-    {
-        MY_ASSERT(true == log_file.WriteLog(LogFile::LOGLEVEL_DEBUG,      kLogDebug));
-    }
+    logger->set_level(Logger::TRACE);
+    std::cout << "level:" << logger->level() << std::endl;
+    MY_ASSERT(logger->level() == Logger::TRACE);
 
-    log_file.WriteLog(LogFile::LOGLEVEL_INFO, "==.............end 1 mb");
+    logger->set_flush_level(Logger::ERROR);
+    std::cout << "flush level:" << logger->flush_level() << std::endl;
+    MY_ASSERT(logger->flush_level() == Logger::ERROR);
+
+    const char* msg = "you are sb";
+    logger->trace(msg);
+    //logger->trace("%s", msg);
+   // logger->trace(msg);
+   // logger->trace(msg);
+   // logger->trace(msg);
+   // logger->trace(msg);
+   // logger->trace(msg);
+   // logger->trace(msg);
+
     return true;
 }
 //---------------------------------------------------------------------------
-bool TestLogFile::Test_Date()
+bool TestLogger::Test_Date()
 {
     const char* path = "/tmp/test_log";
     const char* name = "mylog_date";

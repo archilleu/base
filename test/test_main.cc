@@ -6,7 +6,7 @@
 #include "test_function.h"
 #include "test_thread.h"
 #include "test_file_helper.h"
-#include "test_log_file.h"
+#include "test_logger.h"
 #include "test_mysql_kit.h"
 #include "test_mysql_pool.h"
 #include "test_md5.h"
@@ -25,8 +25,8 @@ TestMain::TestMain()
     //TEST_ADD(TestTimestamp);
     //TEST_ADD(TestFunction);
     //TEST_ADD(TestThread);
-    TEST_ADD(TestFileHelper);
-    //TEST_ADD(TestLogFile);
+    //TEST_ADD(TestFileHelper);
+    TEST_ADD(TestLogger);
     //TEST_ADD(TestMysqlKit);
     //TEST_ADD(TestMysqlPool);
     //TEST_ADD(TestMD5);

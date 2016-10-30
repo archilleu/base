@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef BASE_TEST_TEST_LOG_FILE_H_
-#define BASE_TEST_TEST_LOG_FILE_H_
+#ifndef BASE_TEST_LOGGER_H_
+#define BASE_TEST_LOGGER_H_
 //---------------------------------------------------------------------------
 #include "test_base.h"
 //---------------------------------------------------------------------------
@@ -10,13 +10,13 @@ namespace base
 namespace test
 {
 
-class TestLogFile : public TestBase
+class TestLogger : public TestBase
 {
 public:
-    TestLogFile()
+    TestLogger()
     {
     }
-    virtual ~TestLogFile()
+    virtual ~TestLogger()
     {
     }
 
@@ -24,7 +24,7 @@ public:
 
 private:
     bool Test_Illegal();
-    bool Test_Size();
+    bool Test_Console();
     bool Test_Date();
 };
 
@@ -32,4 +32,4 @@ private:
 
 }//namespace base
 //---------------------------------------------------------------------------
-#endif// BASE_TEST_TEST_LOG_FILE_H_
+#endif// BASE_TEST_LOGGER_H_
