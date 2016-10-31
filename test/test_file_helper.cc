@@ -18,10 +18,24 @@ bool TestFileHelper::DoTest()
 bool TestFileHelper::TestIllegal()
 {
     FileHelper file1;
-    MY_ASSERT(false == file1.Open("/"));
+    try
+    {
+        file1.Open("/");
+    }
+    catch(std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
 
     FileHelper file2;
-    MY_ASSERT(false == file2.Open("/etc/passwd"));
+    try
+    {
+        file2.Open("/etc/passwd");
+    }
+    catch(std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
 
     return true;
 }
@@ -38,7 +52,7 @@ bool TestFileHelper::TestAppend()
 
     FileHelper  file;
     size_t      size = strlen(info1);
-    MY_ASSERT(true == file.Open(path));
+    file.Open(path);
     
     for(int i=0; i<100; i++)
         MY_ASSERT(true == file.Write(info1, size));
@@ -60,7 +74,7 @@ bool TestFileHelper::TestAppend()
     fclose(fp);
 
     //再次追加
-    MY_ASSERT(true == file.Open(path));
+    file.Open(path);
     MY_ASSERT(file_size == file.Size());
     for(int i=0; i<100; i++)
     {
@@ -105,7 +119,7 @@ bool TestFileHelper::TestTruncate()
 
     FileHelper  file;
     size_t      size = strlen(info1);
-    MY_ASSERT(true == file.Open(path, true));
+    file.Open(path, true);
     
     for(int i=0; i<100; i++)
         MY_ASSERT(true == file.Write(info1, size));
@@ -127,7 +141,7 @@ bool TestFileHelper::TestTruncate()
     fclose(fp);
 
     //再次截断
-    MY_ASSERT(true == file.Open(path, true));
+    file.Open(path, true);
     MY_ASSERT(0 == file.Size());
     for(int i=0; i<100; i++)
     {

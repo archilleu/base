@@ -25,7 +25,8 @@ public:
 private:
     bool Test_Illegal();
     bool Test_Console();
-    bool Test_Date();
+    bool Test_File();
+    bool Test_FileAndConsole();
 };
 
 }//namespace test

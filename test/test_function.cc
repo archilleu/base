@@ -77,23 +77,35 @@ bool TestFunction::Test_Path()
     MY_ASSERT(FolderExist(("/tmp")));
 
     const char* path = ("/tmp/myfolder");
-    FolderDelete(path, false);
-    MY_ASSERT(false == FolderDelete(path, false));
+    FolderDelete(path);
+    MY_ASSERT(false == FolderDelete(path));
     MY_ASSERT(FolderCreate(path, true));
     MY_ASSERT(FolderExist(path));
-    MY_ASSERT(FolderDelete(path, false));
+    MY_ASSERT(FolderDelete(path));
     
     const char* path1 = ("/tmp/myfolder/1/2");
     MY_ASSERT(FolderCreate(path1, true));
-    MY_ASSERT(FolderDelete(path1, true));
-    MY_ASSERT(FolderDelete("/tmp/myfolder/1", true));
-    MY_ASSERT(FolderDelete(path, true));
+    MY_ASSERT(FolderDelete(path1));
+    MY_ASSERT(FolderDelete("/tmp/myfolder/1"));
+    MY_ASSERT(FolderDelete(path));
 
     return true;
 }
 //---------------------------------------------------------------------------
 bool TestFunction::Test_Document()
 {
+    std::string path = ("/tmp/myfolder");
+    FolderCreate(path, true);
+
+    for(int i=0; i<10; i++)
+    {
+        SaveFile(path+"/haha.txt", "aaa", 3);
+        FolderCreate(path+"/sub", false);
+        path += "/sub";
+    }
+
+    MY_ASSERT(FolderDelete("/tmp/myfolder"));
+    MY_ASSERT(false == FolderExist("/tmp/myfolder"));
     return true;
 }
 //---------------------------------------------------------------------------

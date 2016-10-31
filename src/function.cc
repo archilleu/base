@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <cstdio>
@@ -282,33 +283,39 @@ bool FolderCreate(const std::string& path, bool recursive)
     return true;
 }
 //---------------------------------------------------------------------------
-bool FolderDelete(const std::string& path, bool recursive)
+bool FolderDelete(const std::string& path)
 {
     if(path.empty())
         return false;
 
-    /*todo recursive = true
-     */
-    recursive = false;
-    
-    if(false == recursive)
-    {
-        if(-1 == rmdir(path.c_str()))
-            return false;
-
-        return true;
-    }
-
     //清空文件和文件夹
-    for(size_t pos=path.find("/", 0); std::string::npos!=pos; pos=path.find('/', pos+1))
+    DIR* dir = opendir(path.c_str());
+    if(0 != dir)
     {
-        if(0 == pos)    //find path is "/"
-            continue;
+        struct dirent entry;
+        struct dirent* result;
+        while(!readdir_r(dir, &entry, &result) && result!=0)
+        {
+            if('.' == entry.d_name[0]) continue;
 
-        std::string sub_path(path, pos);
-        if(-1 == rmdir(sub_path.c_str()))
-            return false;
+            if(DT_DIR == entry.d_type)
+            {
+                if(false == FolderDelete(path + "/" + entry.d_name))
+                {
+                    closedir(dir);
+                    return false;
+                }
+            }
+            else
+            {
+                unlink((path + "/" + entry.d_name).c_str());
+            }
+        }
+        closedir(dir);
     }
+
+    if(-1 == rmdir(path.c_str()))
+        return false;
 
     return true;
 }

@@ -2,7 +2,8 @@
 #include <unistd.h>
 #include "../src/logger.h"
 #include "test_logger.h"
-#include "../src/log_file.h"
+#include "../src/function.h"
+#include "../src/timestamp.h"
 //---------------------------------------------------------------------------
 using namespace base;
 using namespace base::test;
@@ -14,9 +15,10 @@ const char* kLogError   = "hello, error";
 //---------------------------------------------------------------------------
 bool TestLogger::DoTest()
 {
-    //if(false == Test_Illegal())     return false;
+    if(false == Test_Illegal())     return false;
     if(false == Test_Console())     return false;
-    //if(false == Test_Date())        return false;
+    if(false == Test_File())        return false;
+    if(false == Test_FileAndConsole()) return false;
 
     return true;
 }
@@ -25,25 +27,39 @@ bool TestLogger::Test_Illegal()
 {
     //初始化失败
     {
-    LogFile log_file;
-    MY_ASSERT(false == log_file.Initialze("", "", "", 0));
-    MY_ASSERT(false == log_file.Initialze("my title", "", "", 0));
-    MY_ASSERT(false == log_file.Initialze("my title", "/tmp", "", 0));
+    const char* logger_name = "logger name";
+    const char* path = "/tmp/logger";
+    //const char* name = "text";
+    //const char* ext = "log";
+    auto logger = Logger::file_logger_st(logger_name, "", "", "", false);
+    std::cout << "name:" << logger->name() << std::endl;
+    MY_ASSERT(logger->name() == logger_name);
 
-    MY_ASSERT(false == log_file.WriteLog(LogFile::LOGLEVEL_DEBUG, "my first log"));
+    logger->set_level(Logger::TRACE);
+    std::cout << "level:" << logger->level() << std::endl;
+    MY_ASSERT(logger->level() == Logger::TRACE);
+
+    logger->set_flush_level(Logger::ERROR);
+    std::cout << "flush level:" << logger->flush_level() << std::endl;
+    MY_ASSERT(logger->flush_level() == Logger::ERROR);
+
+    try
+    {
+        logger->trace("haha");
+    }
+    catch(std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
     }
 
+    logger = Logger::file_logger_st(logger_name, path, "", "", false);
+    try
     {
-    const char* path = "/tmp/test_log";
-    const char* name = "mylog";
-    LogFile log_file;
-    MY_ASSERT(true == log_file.Initialze("my title", path, name, 1024*1024));
-    for(int i=0; i<10; i++)
+        logger->trace("haha");
+    }
+    catch(std::exception& e)
     {
-        MY_ASSERT(true == log_file.WriteLog(LogFile::LOGLEVEL_DEBUG,      kLogDebug));
-        MY_ASSERT(true == log_file.WriteLog(LogFile::LOGLEVEL_INFO,       kLogInfo));
-        MY_ASSERT(true == log_file.WriteLog(LogFile::LOGLEVEL_WARNING,    kLogDebug));
-        MY_ASSERT(true == log_file.WriteLog(LogFile::LOGLEVEL_ERROR,      kLogDebug));
+        std::cout << e.what() << std::endl;
     }
     }
 
@@ -67,31 +83,97 @@ bool TestLogger::Test_Console()
 
     const char* msg = "you are sb";
     logger->trace(msg);
-    //logger->trace("%s", msg);
-   // logger->trace(msg);
-   // logger->trace(msg);
-   // logger->trace(msg);
-   // logger->trace(msg);
-   // logger->trace(msg);
-   // logger->trace(msg);
+    logger->debug(msg);
+    logger->info(msg);
+    logger->warn(msg);
+    logger->error(msg);
+    logger->critical(msg);
+    logger->off(msg);
+
+    logger->trace("haha:%s", msg);
+    logger->debug("haha:%s", msg);
+    logger->info("haha:%s", msg);
+    logger->warn("haha:%s", msg);
+    logger->error("haha:%s", msg);
+    logger->critical("haha:%s", msg);
+    logger->off("haha:%s", msg);
 
     return true;
 }
 //---------------------------------------------------------------------------
-bool TestLogger::Test_Date()
+bool TestLogger::Test_File()
 {
-    const char* path = "/tmp/test_log";
-    const char* name = "mylog_date";
-    LogFile log_file;
+    const char* logger_name = "logger name";
+    const char* path = "/tmp/logger";
+    const char* name = "text";
+    const char* ext = "log";
+    FolderDelete(path);
+    auto logger = Logger::file_logger_st(logger_name, path, name, ext, false);
 
-    MY_ASSERT(true == log_file.Initialze("date test", path, name, 1024*1024));
-    for(size_t i=0; i<50; i++)
+    const char* msg = "you are sb";
+    //int size = 1024*1024;
+    int size = 1024;
+    for(int i=0; i< size; i++)
     {
-        MY_ASSERT(true == log_file.WriteLog(LogFile::LOGLEVEL_DEBUG,      kLogDebug));
-        sleep(1);
+        logger->trace(msg);
+        logger->debug(msg);
+        logger->info(msg);
+        logger->warn(msg);
+        logger->error(msg);
+        logger->critical(msg);
+        logger->off(msg);
+    }
+    
+    for(int i=0; i< size; i++)
+    {
+        logger->trace("haha:%s", msg);
+        logger->debug("haha:%s", msg);
+        logger->info("haha:%s", msg);
+        logger->warn("haha:%s", msg);
+        logger->error("haha:%s", msg);
+        logger->critical("haha:%s", msg);
+        logger->off("haha:%s", msg);
     }
 
-    log_file.WriteLog(LogFile::LOGLEVEL_INFO, "==.............end date");
+    logger->Flush();
+    return true;
+}
+//---------------------------------------------------------------------------
+bool TestLogger::Test_FileAndConsole()
+{
+    const char* logger_name = "logger name";
+    const char* path = "/tmp/logger";
+    const char* name = "text";
+    const char* ext = "log";
+    FolderDelete(path);
+    auto logger = Logger::file_stdout_logger_st(logger_name, path, name, ext, true);
+
+    const char* msg = "you are sb";
+    //int size = 1024*1024;
+    int size = 1024;
+    for(int i=0; i< size; i++)
+    {
+        logger->trace(msg);
+        logger->debug(msg);
+        logger->info(msg);
+        logger->warn(msg);
+        logger->error(msg);
+        logger->critical(msg);
+        logger->off(msg);
+    }
+    
+    for(int i=0; i< size; i++)
+    {
+        logger->trace("haha:%s", msg);
+        logger->debug("haha:%s", msg);
+        logger->info("haha:%s", msg);
+        logger->warn("haha:%s", msg);
+        logger->error("haha:%s", msg);
+        logger->critical("haha:%s", msg);
+        logger->off("haha:%s", msg);
+    }
+
+    logger->Flush();
     return true;
 }
 //---------------------------------------------------------------------------

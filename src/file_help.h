@@ -5,8 +5,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <string>
 #include <cstring>
+#include <string>
+#include <fstream>
 //---------------------------------------------------------------------------
 namespace base
 {
@@ -25,15 +26,15 @@ public:
     FileHelper(const FileHelper&) =delete;
     FileHelper operator=(const FileHelper&) =delete;
 
-    bool Open(const std::string& file_path, bool truncate=false)
+    void Open(const std::string& file_path, bool truncate=false)
     {
         const char* mode = truncate ? "wb" : "ab";
         fp_ = ::fopen(file_path.c_str(), mode);
         if(0 == fp_)
-            return false;
+            throw std::fstream::failure("open file:" + file_path + " failed!");
 
         path_ = file_path;
-        return true;
+        return;
     }
 
     void Flush(bool sync=false)
