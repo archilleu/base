@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 #include "test_file_helper.h"
-#include "../src/file_help.h"
+#include "../src/file_helper.h"
 #include "../src/function.h"
 //---------------------------------------------------------------------------
 using namespace base;

@@ -15,12 +15,12 @@ add_library(${LIBNAME} ${DIR_SRCS})
 install(TARGETS ${LIBNAME} DESTINATION ${LIBRARY_OUTPUT_PATH_LIB})
 
 set(HEADERS
-    append_file.h
     auto_transaction.h
     computer_info.h
     crc64.h
+    file_helper.h
     function.h
-    log_file.h
+    logger.h
     md5.h
     memory_block.h
     mysql_kit.h
