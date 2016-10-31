@@ -117,7 +117,7 @@ protected:
     {
         MKFile();
 
-        const char* level = LevelToString(lv);
+        const char* level = LevelToShortString(lv);
         file_->Write(level, strlen(level));
         file_->Write(msg, strlen(msg));
         file_->Write("\r\n", 2);
