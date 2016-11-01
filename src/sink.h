@@ -109,7 +109,8 @@ public:
     virtual ~FileSink(){}
     virtual void flush()
     {
-        file_->Flush();
+        if(file_)
+            file_->Flush();
     }
 
 protected:

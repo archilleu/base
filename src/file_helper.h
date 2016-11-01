@@ -39,9 +39,12 @@ public:
 
     void Flush(bool sync=false)
     {
-        ::fflush_unlocked(fp_);
-        if(sync)
-            fsync(::fileno(fp_));
+        if(fp_)
+        {
+            ::fflush_unlocked(fp_);
+            if(sync)
+                fsync(::fileno(fp_));
+        }
     }
 
     void Close()
@@ -55,13 +58,16 @@ public:
 
     bool Write(const void* dat, size_t len)
     {
-        //写磁盘一般不会写失败,除非硬盘真不够或者账号可以使用的空间已满
-        size_t wlen = ::fwrite_unlocked(dat, 1, len, fp_);
-        if(wlen != len)
+        if(fp_)
         {
-            char buf[64];
-            fprintf(stderr, "AppendFile::Append() failed: %s\n", strerror_r(ferror(fp_), buf, sizeof(buf)));
-            return false;
+            //写磁盘一般不会写失败,除非硬盘真不够或者账号可以使用的空间已满
+            size_t wlen = ::fwrite_unlocked(dat, 1, len, fp_);
+            if(wlen != len)
+            {
+                char buf[64];
+                fprintf(stderr, "AppendFile::Append() failed: %s\n", strerror_r(ferror(fp_), buf, sizeof(buf)));
+                return false;
+            }
         }
 
         return true;
@@ -70,9 +76,12 @@ public:
     //Flush befor call
     size_t Size()
     {
-        struct stat st;
-        if(-1 != fstat(fileno(fp_), &st))
-            return static_cast<size_t>(st.st_size);
+        if(fp_)
+        {
+            struct stat st;
+            if(-1 != fstat(fileno(fp_), &st))
+                return static_cast<size_t>(st.st_size);
+        }
 
         return 0;
     }
