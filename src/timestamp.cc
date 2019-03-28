@@ -7,11 +7,12 @@
 namespace base
 {
 //---------------------------------------------------------------------------
-Timestamp Timestamp::kZero = Timestamp();
+Timestamp Timestamp::kInvalid = Timestamp();
 //---------------------------------------------------------------------------
 Timestamp::Timestamp(const std::string& datetime)
 {
     struct tm time;
+    bzero(&time, sizeof(struct tm));
     int nums = sscanf(datetime.c_str(), "%4d-%02d-%02d %02d:%02d:%02d", &time.tm_year, &time.tm_mon, &time.tm_mday, &time.tm_hour, &time.tm_min, &time.tm_sec);
     if(3 > nums)
     {
@@ -98,9 +99,9 @@ Timestamp Timestamp::Now()
    return Timestamp(static_cast<uint64_t>(tv.tv_sec)*kMicrosecondsPerSecond + tv.tv_usec);//RVO
 }
 //---------------------------------------------------------------------------
-Timestamp& Timestamp::Zero()
+Timestamp& Timestamp::Invalid()
 {
-    return Timestamp::kZero;
+    return Timestamp::kInvalid;
 }
 //---------------------------------------------------------------------------
 }//namespace base

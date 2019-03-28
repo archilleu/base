@@ -14,6 +14,7 @@ class ThreadLocal
 public:
     ThreadLocal()
     {
+        //除非同名的key，否者一般不会失败（同名key在debug阶段就可以发现）
         if(0 != pthread_key_create(&key_, &ThreadLocal::Destructor))
             assert(0);
 

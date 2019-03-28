@@ -190,7 +190,7 @@ void MD5::FileMD5(const char* path, MD5_VAL md5_val)
     for(;0<file_info.st_size;)
     {
         size_t  len = (file_info.st_size > file_info.st_blksize) ? file_info.st_blksize : file_info.st_size;
-        ssize_t rlen= read(fd, mb.dat(), len);
+        ssize_t rlen= read(fd, mb.data(), len);
         if(0 > rlen)
         {
             close(fd);
@@ -198,7 +198,7 @@ void MD5::FileMD5(const char* path, MD5_VAL md5_val)
         }
 
         //计算MD5
-        BufferAppend(mb.dat(), rlen);
+        BufferAppend(mb.data(), rlen);
         file_info.st_size -= rlen;
     }
 

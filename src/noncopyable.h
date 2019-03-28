@@ -1,34 +1,23 @@
 //---------------------------------------------------------------------------
-#ifndef BASE_TEST_TEST_MD5_H_
-#define BASE_TEST_TEST_MD5_H_
+#ifndef BASE_NONCOPYABLE_H_
+#define BASE_NONCOPYABLE_H_
 //---------------------------------------------------------------------------
-#include "test_base.h"
 //---------------------------------------------------------------------------
 namespace base
 {
 
-namespace test
+class Noncopyable
 {
-
-class TestMD5 : public TestBase
-{
-public:
-    TestMD5()
-    {
-    }
-    virtual ~TestMD5()
-    {
-    }
-
-    virtual bool DoTest();
+protected:
+    Noncopyable() {}
+    ~Noncopyable() {}
 
 private:
-    bool Test_Normal();
-    bool Test_File();
+    Noncopyable(const Noncopyable&);
+    const Noncopyable& operator=(const Noncopyable&);
 };
 
-}//name test
 
-}//name base
+}//namespace net
 //---------------------------------------------------------------------------
-#endif //BASE_TEST_TEST_MD5_H_
+#endif //NET_EVENT_LOOP_H_

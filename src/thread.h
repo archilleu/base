@@ -6,6 +6,7 @@
 #include <memory>
 #include <thread>
 #include <atomic>
+#include <functional>
 //---------------------------------------------------------------------------
 namespace base
 {
@@ -43,13 +44,19 @@ namespace CurrentThread
 }//namespace CurrentThread
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-//如果不join直接退出，会有以下风险:
-//当Thread是一个很快消失的对象{Threadt(fun);}类似如此作用域的类,
-//类析构的时候会detach线程,thread内部变量tname_内存可能会被下一个thread重用，
-//CurrentThread::tname线程局部变量指向上一个地址，导致可能的错误，所以最好用join保证或者适当延长作用域
+/*
+ * 如果不join直接退出，会有以下风险:
+ * 当Thread是一个很快消失的对象{Threadt(fun);}类似如此作用域的类,
+ * 类析构的时候会detach线程,thread内部变量tname_内存可能会被下一个thread重用，
+ * CurrentThread::tname线程局部变量指向上一个地址，导致可能的错误，
+ * 所以最好用join保证或者适当延长作用域
+*/
 class Thread
 {
 public:
+    //https://en.cppreference.com/w/cpp/utility/functional/function
+    //store the result of a call to std::bind(the function signature can be
+    //void(arg1, arg2...)
     using ThreadFunc = std::function<void (void)>;
 
     Thread(ThreadFunc&& thread_func, const std::string& thread_name=std::string());
@@ -59,6 +66,8 @@ public:
     ~Thread();
 
     bool Start();
+
+    //警告:Join不能再本线程调用，线程会异常退出
     void Join();
 
     int                 tid() const     { return tid_; }

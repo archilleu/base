@@ -12,11 +12,11 @@
 namespace base
 {
 
-class FileHelper 
+class FileHelper
 {
 public:
     FileHelper()
-    :   fp_(0)
+    :   fp_(nullptr)
     {
     }
     ~FileHelper()
@@ -52,7 +52,7 @@ public:
         if(fp_)
         {
             ::fclose(fp_);
-            fp_ = 0;
+            fp_ = nullptr;
         }
     }
 
@@ -65,7 +65,7 @@ public:
             if(wlen != len)
             {
                 char buf[64];
-                fprintf(stderr, "AppendFile::Append() failed: %s\n", strerror_r(ferror(fp_), buf, sizeof(buf)));
+                fprintf(stderr, "wirte failed: %s\n", strerror_r(ferror(fp_), buf, sizeof(buf)));
                 return false;
             }
         }

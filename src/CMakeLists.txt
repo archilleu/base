@@ -15,7 +15,7 @@ add_library(${LIBNAME} ${DIR_SRCS})
 install(TARGETS ${LIBNAME} DESTINATION ${LIBRARY_OUTPUT_PATH_LIB})
 
 set(HEADERS
-    auto_transaction.h
+    any.h
     computer_info.h
     crc64.h
     file_helper.h
@@ -23,9 +23,7 @@ set(HEADERS
     logger.h
     md5.h
     memory_block.h
-    mysql_kit.h
-    mysql_pool.h
-    sem.h
+    noncopyable.h
     thread.h
     thread_local.h
     timestamp.h

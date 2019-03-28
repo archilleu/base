@@ -1,61 +1,44 @@
 //---------------------------------------------------------------------------
-#include <unistd.h>
+#include "test_inc.h"
 #include "../src/logger.h"
-#include "test_logger.h"
 #include "../src/function.h"
 #include "../src/timestamp.h"
 //---------------------------------------------------------------------------
 using namespace base;
 using namespace base::test;
 //---------------------------------------------------------------------------
-const char* kLogDebug   = "hello, debug";
-const char* kLogInfo    = "hello, info";
-const char* kLogWarning = "hello, warning";
-const char* kLogError   = "hello, error";
+static const char* path = "/tmp/logger";
+static const char* illgal_path = "/root/illegal";
 //---------------------------------------------------------------------------
-bool TestLogger::DoTest()
-{
-    if(false == Test_Illegal())     return false;
-    if(false == Test_Console())     return false;
-    if(false == Test_File())        return false;
-    if(false == Test_FileAndConsole()) return false;
-
-    return true;
-}
-//---------------------------------------------------------------------------
-bool TestLogger::Test_Illegal()
+bool Test_Illegal()
 {
     //初始化失败
     {
-    const char* logger_name = "logger name";
-    const char* path = "/tmp/logger";
-    //const char* name = "text";
-    //const char* ext = "log";
-    auto logger = Logger::file_logger_st(logger_name, "", "", "", false);
-    std::cout << "name:" << logger->name() << std::endl;
-    MY_ASSERT(logger->name() == logger_name);
+    auto logger = Logger::file_logger_st(illgal_path, false);
 
     logger->set_level(Logger::TRACE);
     std::cout << "level:" << logger->level() << std::endl;
-    MY_ASSERT(logger->level() == Logger::TRACE);
+    TEST_ASSERT(logger->level() == Logger::TRACE);
 
     logger->set_flush_level(Logger::ERROR);
     std::cout << "flush level:" << logger->flush_level() << std::endl;
-    MY_ASSERT(logger->flush_level() == Logger::ERROR);
+    TEST_ASSERT(logger->flush_level() == Logger::ERROR);
 
     try
     {
         logger->trace("haha");
+        TEST_ASSERT(false);
     }
     catch(std::exception& e)
     {
         std::cout << e.what() << std::endl;
     }
 
-    logger = Logger::file_logger_st(logger_name, path, "", "", false);
+    logger = Logger::file_logger_st(illgal_path, false);
     try
     {
         logger->trace("haha");
+        TEST_ASSERT(false);
     }
     catch(std::exception& e)
     {
@@ -66,20 +49,17 @@ bool TestLogger::Test_Illegal()
     return true;
 }
 //---------------------------------------------------------------------------
-bool TestLogger::Test_Console()
+bool Test_Console()
 {
-    const char* logger_name = "haha";
-    auto logger = Logger::stdout_logger_mt(logger_name);
-    std::cout << "name:" << logger->name() << std::endl;
-    MY_ASSERT(logger->name() == logger_name);
+    auto logger = Logger::stdout_logger_mt();
 
     logger->set_level(Logger::TRACE);
     std::cout << "level:" << logger->level() << std::endl;
-    MY_ASSERT(logger->level() == Logger::TRACE);
+    TEST_ASSERT(logger->level() == Logger::TRACE);
 
     logger->set_flush_level(Logger::ERROR);
     std::cout << "flush level:" << logger->flush_level() << std::endl;
-    MY_ASSERT(logger->flush_level() == Logger::ERROR);
+    TEST_ASSERT(logger->flush_level() == Logger::ERROR);
 
     const char* msg = "you are sb";
     logger->trace(msg);
@@ -101,14 +81,10 @@ bool TestLogger::Test_Console()
     return true;
 }
 //---------------------------------------------------------------------------
-bool TestLogger::Test_File()
+bool Test_File()
 {
-    const char* logger_name = "logger name";
-    const char* path = "/tmp/logger";
-    const char* name = "text";
-    const char* ext = "log";
     FolderDelete(path);
-    auto logger = Logger::file_logger_st(logger_name, path, name, ext, false);
+    auto logger = Logger::file_logger_st(path, false);
 
     const char* msg = "you are sb";
     //int size = 1024*1024;
@@ -139,14 +115,10 @@ bool TestLogger::Test_File()
     return true;
 }
 //---------------------------------------------------------------------------
-bool TestLogger::Test_FileAndConsole()
+bool Test_FileAndConsole()
 {
-    const char* logger_name = "logger name";
-    const char* path = "/tmp/logger";
-    const char* name = "text";
-    const char* ext = "log";
     FolderDelete(path);
-    auto logger = Logger::file_stdout_logger_st(logger_name, path, name, ext, true);
+    auto logger = Logger::file_stdout_logger_st(path, true);
 
     const char* msg = "you are sb";
     //int size = 1024*1024;
@@ -175,5 +147,18 @@ bool TestLogger::Test_FileAndConsole()
 
     logger->Flush();
     return true;
+}
+//---------------------------------------------------------------------------
+int main(int, char**)
+{
+    TestTitle();
+
+    Test_Illegal();
+    Test_Console();
+    Test_File();
+    Test_FileAndConsole();
+
+    FolderDelete(path);
+    return 0;
 }
 //---------------------------------------------------------------------------

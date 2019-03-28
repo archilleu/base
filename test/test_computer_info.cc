@@ -1,21 +1,11 @@
 //---------------------------------------------------------------------------
-#include <unistd.h>
-#include <iostream>
-#include "test_computer_info.h"
+#include "test_inc.h"
 #include "../src/computer_info.h"
 //---------------------------------------------------------------------------
 using namespace base;
 using namespace base::test;
 //---------------------------------------------------------------------------
-bool TestComputerInfo::DoTest()
-{
-
-    if(false == Test_Normal())  return false;
-
-    return true;
-}
-//---------------------------------------------------------------------------
-bool TestComputerInfo::Test_Normal()
+bool Test_Normal()
 {
     //computer description
     {
@@ -33,7 +23,9 @@ bool TestComputerInfo::Test_Normal()
     std::cout << "filesystem " << "mount point" << "used " << "total " << std::endl;
     for(auto iter : info)
     {
-        std::cout << iter.filesystem << " " << iter.mount_point << "   " << iter.used/1024<< "     " << iter.total/1024<< std::endl;
+        std::cout << iter.filesystem << "mount_point:" << iter.mount_point
+            << "\t" << "used(kb):" << iter.used/1024
+            << "\t(total(kb):" << iter.total/1024<< std::endl;
     }
 
     }
@@ -47,6 +39,7 @@ bool TestComputerInfo::Test_Normal()
     //cpu info
     {
     ComputerInfo::CPUInfo cpu = ComputerInfo::GetCPUInfo();
+    std::cout << "cpu info:" << std::endl;
     std::cout << "vender:" << cpu.vender << std::endl <<
         "model name:" << cpu.modle_name << std::endl <<
         "MHz: " << cpu.MHz << std::endl <<
@@ -63,5 +56,13 @@ bool TestComputerInfo::Test_Normal()
     }
 
     return true;
+}
+//---------------------------------------------------------------------------
+int main(int, char**)
+{
+    TestTitle();
+
+    Test_Normal();
+    return 0;
 }
 //---------------------------------------------------------------------------

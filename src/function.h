@@ -3,11 +3,11 @@
 #define BASE_FUNCTION_H_
 //---------------------------------------------------------------------------
 #include <string>
+#include <vector>
+#include "memory_block.h"
 //---------------------------------------------------------------------------
 namespace base
 {
-
-class MemoryBlock;
 
 //---------------------------------------------------------------------------
 //组装字符串，和printf类似
@@ -18,15 +18,30 @@ std::string BinToString(const unsigned char* buffer, size_t len);
 MemoryBlock StringToBin(const std::string& buffer);
 MemoryBlock StringToBin(const unsigned char* buffer, size_t len);
 //---------------------------------------------------------------------------
+//大小写转换
+std::string ToUpper(const std::string& str);
+std::string ToLower(const std::string& str);
+//---------------------------------------------------------------------------
 //二进制数据转换为等值的字符(1byte<==>1byte)
 std::string BinToChars(const unsigned char* buffer, size_t len);
 MemoryBlock CharsToBin(const std::string& buffer);
 MemoryBlock CharsToBin(const char* buffer);
 //---------------------------------------------------------------------------
+std::string Base64_encode(const std::string& dat);
+std::string Base64_encode(const char* dat, size_t len);
+std::string Base64_encode(const void* dat, size_t len);
+std::string Base64_encode(const MemoryBlock& dat);
+MemoryBlock Base64_decode(const std::string& dat);
+MemoryBlock Base64_decode(const char* dat);
+//---------------------------------------------------------------------------
+std::vector<std::string> split(const std::string& str, char delim);
+//---------------------------------------------------------------------------
 //获取程序运行的路径
-std::string RunPathFolder   ();
-std::string RunPathFileName (const std::string& name);
-std::string RunPathFileName (const char* name);
+std::string RunPathFolder();
+//获取程序运行的名字
+std::string RunExeName();
+std::string RunPathFileName(const std::string& name);
+std::string RunPathFileName(const char* name);
 //---------------------------------------------------------------------------
 std::string PathParent  (const std::string& path);
 std::string PathParent  (const char* path);
