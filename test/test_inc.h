@@ -7,6 +7,9 @@
 #include <iostream>
 #include <unistd.h>
 #include <stdlib.h>
+#include <functional>
+#include <set>
+#include <mutex>
 #include <cstring>
 //---------------------------------------------------------------------------
 #define TEST_ASSERT(EXPRESSION) \

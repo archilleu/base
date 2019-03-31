@@ -1,27 +1,26 @@
 //---------------------------------------------------------------------------
-#include "test_timestamp.h"
+#include "test_inc.h"
 #include "../src/timestamp.h"
 //---------------------------------------------------------------------------
 using namespace base;
 using namespace base::test;
 //---------------------------------------------------------------------------
-bool TestTimestamp::DoTest()
+int main(int, char**)
 {
-    std::cout << Timestamp::Zero().Datetime(true)<< std::endl;
-    Timestamp   now     = Timestamp::Now();
-    uint64_t    seconds = now.Microseconds();
+    std::cout << "Invalid time:" << Timestamp::Invalid().Datetime(true)<< std::endl;
 
-    std::string time1   = now.Time();
-    std::string time2   = now.Date();
-    std::string time3   = now.Datetime();
-    std::string time4   = now.Datetime(true);
-    std::string total   = time1 + " "+ time2 + " " + time3 + " " + time4;
+    Timestamp now = Timestamp::Now();
+    uint64_t seconds = now.Microseconds();
 
-    std::cout << time1 << std::endl;
-    std::cout << time2 << std::endl;
-    std::cout << time3 << std::endl;
-    std::cout << time4 << std::endl;
-    std::cout << total << std::endl;
+    std::string time1 = now.Time();
+    std::string time2 = now.Date();
+    std::string time3 = now.Datetime();
+    std::string time4 = now.Datetime(true);
+
+    std::cout << "time:" << time1 << std::endl;
+    std::cout << "date:" << time2 << std::endl;
+    std::cout << "datetime:" << time3 << std::endl;
+    std::cout << "datetime(ms):" << time4 << std::endl;
 
     Timestamp t1(seconds);
     assert(time1 == t1.Time());
@@ -29,22 +28,22 @@ bool TestTimestamp::DoTest()
     assert(time3 == t1.Datetime());
     assert(time4 == t1.Datetime(true));
 
-    MY_ASSERT(time1 == t1.Time());
-    MY_ASSERT(time2 == t1.Date());
-    MY_ASSERT(time3 == t1.Datetime());
-    MY_ASSERT(time4 == t1.Datetime(true));
+    TEST_ASSERT(time1 == t1.Time());
+    TEST_ASSERT(time2 == t1.Date());
+    TEST_ASSERT(time3 == t1.Datetime());
+    TEST_ASSERT(time4 == t1.Datetime(true));
 
     t1.AddTime(5);
     std::string time_add = t1.Datetime(true);
     std::cout << "add time:" <<  time_add << std::endl;
 
-    MY_ASSERT(now < t1);
-    MY_ASSERT(now != t1);
-    MY_ASSERT(t1 > now);
+    TEST_ASSERT(now < t1);
+    TEST_ASSERT(now != t1);
+    TEST_ASSERT(t1 > now);
 
     t1.ReduceTime(5);
-    MY_ASSERT(now == t1);
+    TEST_ASSERT(now == t1);
 
-    return true;
+    return 0;
 }
 //---------------------------------------------------------------------------

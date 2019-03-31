@@ -70,8 +70,8 @@ public:
     //警告:Join不能再本线程调用，线程会异常退出
     void Join();
 
-    int                 tid() const     { return tid_; }
-    const std::string&  name() const    { return name_; }
+    int tid() const { return tid_; }
+    const std::string&  name() const { return name_; }
 
 private:
     void OnThreadFunc();
@@ -79,14 +79,14 @@ private:
     void SetThreadName();
 
 private:
-    int         tid_;
+    int tid_;
     std::string name_;
 
     bool joined_;
     bool started_;
 
     std::thread thread_;
-    ThreadFunc  thread_func_;
+    ThreadFunc thread_func_;
 
 private:
     static std::atomic<int> thread_num_;

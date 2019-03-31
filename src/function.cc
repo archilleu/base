@@ -345,18 +345,23 @@ std::string RunPathFolder()
 std::vector<std::string> split(const std::string& str, char delim)
 {
     size_t pos = 0;
-    size_t found = str.find(delim);
+    size_t found = 0;
     std::vector<std::string> elems;
-    while(std::string::npos != found)
+    while(true)
     {
+        found = str.find(delim, pos);
+        if(std::string::npos == found)
+            break;
+
         std::string item = str.substr(pos, found-pos);
         pos = found + 1;
-        found = str.find(delim, pos);
         if(item.empty())
             continue;
         elems.push_back(std::move(item));
-    }
-    elems.push_back(str.substr(pos));
+    };
+
+    if(pos < str.length())
+        elems.push_back(str.substr(pos));
 
     return elems;
 }

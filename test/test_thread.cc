@@ -1,12 +1,65 @@
 //---------------------------------------------------------------------------
-#include <unistd.h>
-#include "test_thread.h"
+#include "test_inc.h"
+#include "../src/thread.h"
 //---------------------------------------------------------------------------
-namespace base
+using namespace base;
+using namespace base::test;
+//---------------------------------------------------------------------------
+class TestThread
 {
+public:
+    TestThread()
+    :   thread1_(std::bind(&TestThread::Thread_Func1, this)),
+        thread2_(std::bind(&TestThread::Thread_Func1, this))
+    {
+        atomic_ = 0;
+    }
+    ~TestThread()
+    {}
 
-namespace test
+    bool Test_ParamClass();
+
+private:
+    void Thread_Func1();
+    
+    int count_;
+    std::mutex mutex_;
+    std::atomic<int> atomic_;
+
+    Thread thread1_;
+    Thread thread2_;
+
+    static const int TIMES = 1024*1024*1024;
+};
+//---------------------------------------------------------------------------
+void TestThread::Thread_Func1()
 {
+    for(int i=0; i<TestThread::TIMES/2; i++)
+    {
+        atomic_++;
+
+        std::lock_guard<std::mutex> lock(mutex_);
+        count_++;
+    }
+
+    return;
+}
+//---------------------------------------------------------------------------
+bool TestThread::Test_ParamClass()
+{
+    count_ = 0;  
+
+    TEST_ASSERT(thread1_.Start());
+    TEST_ASSERT(thread2_.Start());
+
+    std::cerr << "test long time, please wait" << std::endl;
+    thread1_.Join();
+    thread2_.Join();
+
+    TEST_ASSERT(TestThread::TIMES == count_);
+    TEST_ASSERT(TestThread::TIMES == atomic_);
+    return true;
+}
 //---------------------------------------------------------------------------
 void ThreadFunc_None()
 {
@@ -31,21 +84,10 @@ void Thread_Func_ParamTow(int num, int* count)
     return;
 }
 //---------------------------------------------------------------------------
-bool TestThread::TestThread::DoTest()
-{
-    if(false == Test_None())        return false;
-    if(false == Test_ParamNone())   return false;
-    if(false == Test_Param1())      return false;
-    if(false == Test_ParamClass())  return false;
-    if(false == Test_100())         return false;
-
-    return true;
-}
-//---------------------------------------------------------------------------
-bool TestThread::Test_None()
+bool Test_None()
 {
     Thread t1(ThreadFunc_None);
-    MY_ASSERT(t1.Start());
+    TEST_ASSERT(t1.Start());
 
     std::cout << "fname:" << t1.name() << std::endl;
     std::cout << "fid:" << t1.tid() << std::endl;;
@@ -54,51 +96,35 @@ bool TestThread::Test_None()
     return true;
 }
 //---------------------------------------------------------------------------
-bool TestThread::Test_ParamNone()
+bool Test_ParamNone()
 {
     Thread t1(ThreadFunc_None);
     Thread t2(ThreadFunc_None);
     Thread t3(ThreadFunc_None);
     t1.Start();
     t2.Start();
-    MY_ASSERT(t3.Start());
+    TEST_ASSERT(t3.Start());
     t3.Join();
 
     return true;
 }
 //---------------------------------------------------------------------------
-bool TestThread::Test_Param1()
+bool Test_Param1()
 {
-    int num     = 0;
-    int count   = 0;
+    int num = 0;
+    int count = 0;
 
     Thread t(std::bind(Thread_Func_ParamTow, num, &count));
-    MY_ASSERT(t.Start());
+    TEST_ASSERT(t.Start());
     t.Join();
 
-    MY_ASSERT(0 == num);
-    MY_ASSERT(10 == count);
+    TEST_ASSERT(0 == num);
+    TEST_ASSERT(10 == count);
 
     return true;
 }
 //---------------------------------------------------------------------------
-bool TestThread::Test_ParamClass()
-{
-    count_ = 0;  
-
-    MY_ASSERT(thread1_.Start());
-    MY_ASSERT(thread2_.Start());
-
-    fprintf(stderr, "test long time, please wait");
-    thread1_.Join();
-    thread2_.Join();
-
-    MY_ASSERT(1024*1024*1024 == count_);
-    MY_ASSERT(1024*1024*1024 == acount_);
-    return true;
-}
-//---------------------------------------------------------------------------
-bool TestThread::Test_100()
+bool Test_100_thread()
 {
     for(int i=0; i<100; i++)
     {
@@ -110,18 +136,18 @@ bool TestThread::Test_100()
     return true;
 }
 //---------------------------------------------------------------------------
-void TestThread::Thread_Func1()
+int main(int, char**)
 {
-    for(uint64_t i=0; i<1024*1024*1024/2; i++)
-    {
-        acount_++;
-        std::lock_guard<std::mutex> lock(mutex_);
-        count_++;
-    }
+    TestTitle();
 
-    return;
+    Test_None();
+    Test_ParamNone();
+    Test_Param1();
+    Test_100_thread();
+
+    TestThread test_thread;
+    test_thread.Test_ParamClass();
+
+    return 0;
 }
 //---------------------------------------------------------------------------
-}//namespace test
-
-}//namespace base

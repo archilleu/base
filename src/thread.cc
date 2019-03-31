@@ -126,8 +126,8 @@ void Thread::Join()
 //---------------------------------------------------------------------------
 void Thread::OnThreadFunc()
 {
-    tid_                        = CurrentThread::tid();
-    CurrentThread::t_thread_name= name_.c_str();
+    tid_ = CurrentThread::tid();
+    CurrentThread::t_thread_name = name_.c_str();
 
     try
     {
@@ -138,6 +138,7 @@ void Thread::OnThreadFunc()
         std::cout << "--------------------------->" << std::endl;
         std::cout << "thread catch exception:"<< e.what() << std::endl;
         std::cout << "--------------------------->" << std::endl;
+        throw e;
     }
 
     return;

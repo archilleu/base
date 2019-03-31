@@ -1,17 +1,35 @@
 //---------------------------------------------------------------------------
-#include "test_thread_local.h"
-#include "../src/thread_local.h"
+#include "test_inc.h"
 #include "../src/function.h"
+#include "../src/thread.h"
+#include "../src/thread_local.h"
 //---------------------------------------------------------------------------
 using namespace base;
 using namespace base::test;
 //---------------------------------------------------------------------------
-bool TestThreadLocal::DoTest()
+class TestThreadLocal
 {
-    if(false == Test_Normal())  return false;
+public:
+    TestThreadLocal()
+    :   thread1_(std::bind(&TestThreadLocal::OnThread1, this)),
+        thread2_(std::bind(&TestThreadLocal::OnThread2, this))
+    {
+    }
 
-    return true;
-}
+    bool Test_Normal();
+
+private:
+    void OnThread1();
+    void OnThread2();
+
+private:
+    Thread thread1_;
+    Thread thread2_;
+
+    std::set<std::string> set1_;
+    std::set<std::string> set2_;
+    ThreadLocal<std::set<std::string>> tls_;
+};
 //---------------------------------------------------------------------------
 bool TestThreadLocal::Test_Normal()
 {
@@ -28,7 +46,7 @@ bool TestThreadLocal::Test_Normal()
     thread2_.Join();
 
     tls_.value().insert("aaa");
-    MY_ASSERT(*(tls_.value().begin()) == "aaa");
+    TEST_ASSERT(*(tls_.value().begin()) == "aaa");
     std::cout << *(tls_.value().begin()) << std::endl;
 
     return true;
@@ -36,12 +54,12 @@ bool TestThreadLocal::Test_Normal()
 //---------------------------------------------------------------------------
 void TestThreadLocal::OnThread1()
 {
-    for(auto iter: set1_)
+    for(auto iter : set1_)
     {
         tls_.value().insert(iter);
     }
 
-    for(auto iter: set1_)
+    for(auto iter : set1_)
     {
         tls_.value().erase(iter);
     }
@@ -53,12 +71,12 @@ void TestThreadLocal::OnThread1()
 //---------------------------------------------------------------------------
 void TestThreadLocal::OnThread2()
 {
-    for(auto iter: set2_)
+    for(auto iter : set2_)
     {
         tls_.value().insert(iter);
     }
 
-    for(auto iter: set2_)
+    for(auto iter : set2_)
     {
         tls_.value().erase(iter);
     }
@@ -68,3 +86,11 @@ void TestThreadLocal::OnThread2()
     return;
 }
 //---------------------------------------------------------------------------
+int main(int, char**)
+{
+    TestTitle();
+
+    TestThreadLocal local;
+    local.Test_Normal();
+    return 0;
+}

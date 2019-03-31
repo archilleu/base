@@ -31,6 +31,7 @@ std::string Base64_encode(const std::string& dat);
 std::string Base64_encode(const char* dat, size_t len);
 std::string Base64_encode(const void* dat, size_t len);
 std::string Base64_encode(const MemoryBlock& dat);
+
 MemoryBlock Base64_decode(const std::string& dat);
 MemoryBlock Base64_decode(const char* dat);
 //---------------------------------------------------------------------------
@@ -43,31 +44,31 @@ std::string RunExeName();
 std::string RunPathFileName(const std::string& name);
 std::string RunPathFileName(const char* name);
 //---------------------------------------------------------------------------
-std::string PathParent  (const std::string& path);
-std::string PathParent  (const char* path);
-std::string PathName    (const std::string& path);
-std::string PathName    (const char* path);
+std::string PathParent(const std::string& path);
+std::string PathParent(const char* path);
+std::string PathName(const std::string& path);
+std::string PathName(const char* path);
 //---------------------------------------------------------------------------
 //文件夹操作
-bool FolderCreate   (const std::string& path, bool recursive);
-bool FolderDelete   (const std::string& path);
-bool FolderExist    (const std::string& path);
-bool FolderExist    (const char* path);
+bool FolderCreate(const std::string& path, bool recursive);
+bool FolderDelete(const std::string& path);
+bool FolderExist(const std::string& path);
+bool FolderExist(const char* path);
 //---------------------------------------------------------------------------
 //文件操作
-bool FileDelete (const std::string& pathname);
-bool FileDelete (const char* pathname);
-bool FileExist  (const std::string& pathname);
-bool FileExist  (const char* pathname);
+bool FileDelete(const std::string& pathname);
+bool FileDelete(const char* pathname);
+bool FileExist(const std::string& pathname);
+bool FileExist(const char* pathname);
 
-bool LoadFile   (const std::string& path, MemoryBlock* result);
-bool LoadFile   (const char* path, MemoryBlock* result);
-bool SaveFile   (const std::string& path, const char* dat, size_t len);
-bool SaveFile   (const char* path, const char* dat, size_t len);
+bool LoadFile(const std::string& path, MemoryBlock* result);
+bool LoadFile(const char* path, MemoryBlock* result);
+bool SaveFile(const std::string& path, const char* dat, size_t len);
+bool SaveFile(const char* path, const char* dat, size_t len);
 //---------------------------------------------------------------------------
 //文档（文件和文件夹）
-bool DocumentExist  (const std::string& pathname);
-bool DocumentExist  (const char* pathname);
+bool DocumentExist(const std::string& pathname);
+bool DocumentExist(const char* pathname);
 //---------------------------------------------------------------------------
 
 }//namespace base

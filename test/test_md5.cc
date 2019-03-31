@@ -18,7 +18,7 @@ bool Test_Normal()
     {
         md5.BufferAppend(iter.first.data(), iter.first.size());
         std::string str = md5.Done();
-        TEST_ASSERT(0 == strcasecmp(str.c_str(), iter.second.c_str()));
+        TEST_ASSERT(strcasecmp(str.c_str(), iter.second.c_str()));
     }
 
     for(auto iter : str_md5)
@@ -36,7 +36,7 @@ bool Test_File()
 {
     std::string md5_str = "061d9674bbf86b5cbe4cefdad02bcf3d";
     MD5 md5;
-    std::string result = md5.FileMD5("../../test/md5_file/json_file.zip");
+    std::string result = md5.FileMD5("../test/md5_file/json_file.zip");
     TEST_ASSERT(0 == strcasecmp(md5_str.c_str(), result.c_str()));
     TEST_ASSERT(0 == strcasecmp(md5_str.c_str(), md5.FileMD5("./md5_file/json_file.zip").c_str()));
     
