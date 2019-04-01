@@ -182,7 +182,7 @@ bool Test_Document()
 bool Test_File()
 {
     MemoryBlock mb;
-    TEST_ASSERT(LoadFile("../test/test_function.cc", &mb));
+    TEST_ASSERT(LoadFile("../../test/test_function.cc", &mb));
 
     return true; 
 }

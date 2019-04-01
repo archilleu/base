@@ -55,19 +55,21 @@ target_link_libraries(${TEST_thread_local} ${LIBNAME} pthread)
 target_link_libraries(${TEST_timestamp} ${LIBNAME} pthread)
 #---------------------------------------------------------------------------
 #add test
-add_test(test_run ${EXECUTABLE_OUTPUT_PATH}/${TEST_function})
+add_test(${TEST_function} ${EXECUTABLE_OUTPUT_PATH}/${TEST_function}
+    WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
 
-add_test(test_run ${EXECUTABLE_OUTPUT_PATH}/${TEST_computer_info})
+add_test(${TEST_computer_info} ${EXECUTABLE_OUTPUT_PATH}/${TEST_computer_info})
 
-add_test(test_run ${EXECUTABLE_OUTPUT_PATH}/${TEST_file_helper})
+add_test(${TEST_file_helper} ${EXECUTABLE_OUTPUT_PATH}/${TEST_file_helper})
 
-add_test(test_run ${EXECUTABLE_OUTPUT_PATH}/${TEST_logger})
+add_test(${TEST_logger} ${EXECUTABLE_OUTPUT_PATH}/${TEST_logger})
 
-add_test(test_run ${EXECUTABLE_OUTPUT_PATH}/${TEST_md5})
+add_test(${TEST_md5} ${EXECUTABLE_OUTPUT_PATH}/${TEST_md5}
+    WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
 
-add_test(test_run ${EXECUTABLE_OUTPUT_PATH}/${TEST_thread})
+add_test(${TEST_thread} ${EXECUTABLE_OUTPUT_PATH}/${TEST_thread})
 
-add_test(test_run ${EXECUTABLE_OUTPUT_PATH}/${TEST_thread_local})
+add_test(${TEST_thread_local} ${EXECUTABLE_OUTPUT_PATH}/${TEST_thread_local})
 
-add_test(test_run ${EXECUTABLE_OUTPUT_PATH}/${TEST_timestamp})
+add_test(${TEST_timestamp} ${EXECUTABLE_OUTPUT_PATH}/${TEST_timestamp})
 #---------------------------------------------------------------------------
