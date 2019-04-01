@@ -104,6 +104,8 @@ bool Test_ParamNone()
     t1.Start();
     t2.Start();
     TEST_ASSERT(t3.Start());
+    t1.Join();
+    t2.Join();
     t3.Join();
 
     return true;

@@ -8,7 +8,7 @@ using namespace base;
 using namespace base::test;
 //---------------------------------------------------------------------------
 static const char* path = "/tmp/logger";
-static const char* illgal_path = "/root/illegal";
+static const char* illgal_path = "/proc/illegal";
 //---------------------------------------------------------------------------
 bool Test_Illegal()
 {
