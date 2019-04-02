@@ -29,6 +29,9 @@ add_executable(${TEST_thread_local} test_thread_local.cc)
 
 set(TEST_timestamp test_timestamp)
 add_executable(${TEST_timestamp} test_timestamp.cc)
+
+set(TEST_json test_json)
+add_executable(${TEST_json} test_json.cc)
 #---------------------------------------------------------------------------
 #add include path
 #include_directories(${LIBRARY_OUTPUT_PATH_INC})
@@ -52,7 +55,9 @@ target_link_libraries(${TEST_thread} ${LIBNAME} pthread)
 
 target_link_libraries(${TEST_thread_local} ${LIBNAME} pthread)
 
-target_link_libraries(${TEST_timestamp} ${LIBNAME} pthread)
+target_link_libraries(${TEST_timestamp} ${LIBNAME})
+
+target_link_libraries(${TEST_json} ${LIBNAME})
 #---------------------------------------------------------------------------
 #add test
 add_test(${TEST_function} ${EXECUTABLE_OUTPUT_PATH}/${TEST_function}
@@ -72,4 +77,7 @@ add_test(${TEST_thread} ${EXECUTABLE_OUTPUT_PATH}/${TEST_thread})
 add_test(${TEST_thread_local} ${EXECUTABLE_OUTPUT_PATH}/${TEST_thread_local})
 
 add_test(${TEST_timestamp} ${EXECUTABLE_OUTPUT_PATH}/${TEST_timestamp})
+
+add_test(${TEST_json} ${EXECUTABLE_OUTPUT_PATH}/${TEST_json}
+    WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
 #---------------------------------------------------------------------------

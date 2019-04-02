@@ -5,6 +5,7 @@ cmake_minimum_required (VERSION 2.8)
 #look up dir's file, and add to var
 #aux_source_directory(<dir> <variable>)
 aux_source_directory(. DIR_SRCS)
+aux_source_directory(./json DIR_SRCS)
 #---------------------------------------------------------------------------
 #generate static library
 #add_library(libname ${<dir>})
@@ -14,6 +15,7 @@ add_library(${LIBNAME} ${DIR_SRCS})
 #install target 
 install(TARGETS ${LIBNAME} DESTINATION ${LIBRARY_OUTPUT_PATH_LIB})
 
+#base
 set(HEADERS
     any.h
     computer_info.h
@@ -28,5 +30,14 @@ set(HEADERS
     thread_local.h
     timestamp.h
     )
+
+#json
+set(HEADERS_JSON
+    json/json_reader.h
+    json/json_writer.h
+    json/value.h
+    )
 install(FILES ${HEADERS} DESTINATION ${LIBRARY_OUTPUT_PATH_INC})
+install(FILES ${HEADERS_JSON} DESTINATION ${LIBRARY_OUTPUT_PATH_INC}/json)
 #---------------------------------------------------------------------------
+
