@@ -95,6 +95,16 @@ const ObjectValue& ArrayValue::GetObjectValue(size_t index) const
     return *dynamic_cast<const ObjectValue*>(&value);
 }
 //---------------------------------------------------------------------------
+Value& ArrayValue::operator[](int index)
+{
+    return (*val_.array)[index];
+}
+//---------------------------------------------------------------------------
+const Value& ArrayValue::operator[](int index) const
+{
+    return (*val_.array)[index];
+}
+//---------------------------------------------------------------------------
 
 }//namespace json
 

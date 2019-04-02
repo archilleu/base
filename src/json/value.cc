@@ -8,6 +8,14 @@ namespace base
 namespace json
 {
 //---------------------------------------------------------------------------
+Value::Value()
+:   type_(TYPE::NUL)
+{
+    val_.value = nullptr;
+    val_.array = nullptr;
+    val_.object = nullptr;
+}
+//---------------------------------------------------------------------------
 Value::Value(TYPE type)
 :   type_(type)
 {

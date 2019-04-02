@@ -37,6 +37,7 @@ public:
     using ObjectIter= Object::const_iterator;
 
 public:
+    Value();
     Value(TYPE type);
     Value(const Value& other);
     Value(Value&& other);

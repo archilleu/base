@@ -38,6 +38,9 @@ public:
     ObjectValue& GetObjectValue(size_t index);
     const ObjectValue& GetObjectValue(size_t index) const;
 
+    Value& operator[](int index);
+    const Value& operator[](int index) const;
+
     ArrayIter IterBegin() const { return val_.array->begin(); }
     ArrayIter IterEnd() const { return val_.array->end(); }
 };
