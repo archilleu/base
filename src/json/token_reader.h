@@ -50,7 +50,7 @@ public:
     bool ReadString(std::string& str);
 
     //读取数值类型
-    bool ReadNumber(std::string& num, Value::TYPE& type);
+    bool ReadNumber(std::string& num, Value::ValueType& type);
 
     //布尔类型
     bool ReadBoolean(bool& boolean);

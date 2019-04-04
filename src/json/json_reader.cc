@@ -144,7 +144,7 @@ bool JsonReader::_Parse(Value* root)
              * string
              * 这个时候可以匹配的状态有3个,需要根据上一个匹配状态来决定当前要读取的是key,
              * 还是object的值,还是array的值
-             * 如果要读取的是key值,则上一次设定的期待状态是KEY,
+             * 如果要读取的是key值,则上一次设定的期待状态是Key,
              * 如果是object的值,则在上一次设定期待的值是object_value,
              * 如果是array的值,则上一次设定期待的值是array_value
              * 否则是失败,返回错误
@@ -161,7 +161,7 @@ bool JsonReader::_Parse(Value* root)
 
                 if(HasStatus(kEXP_STATUS_OBJECT_VALUE)) // object value
                 {
-                    if(false == CaseStatusObjectValue(Value::STRING))
+                    if(false == CaseStatusObjectValue(Value::String))
                         return false;
 
                     break;
@@ -169,7 +169,7 @@ bool JsonReader::_Parse(Value* root)
 
                 if(HasStatus(kEXP_STATUS_ARRAY_VALUE))  // array value
                 {
-                    if(false == CaseStatusArrayValue(Value::STRING))
+                    if(false == CaseStatusArrayValue(Value::String))
                         return false;
 
                     break;
@@ -184,7 +184,7 @@ bool JsonReader::_Parse(Value* root)
             {
                 if(HasStatus(kEXP_STATUS_OBJECT_VALUE)) // obj value
                 {
-                    if(false == CaseStatusObjectValue(Value::BOOLEAN))
+                    if(false == CaseStatusObjectValue(Value::Boolean))
                         return false;
 
                     break;
@@ -192,7 +192,7 @@ bool JsonReader::_Parse(Value* root)
 
                 if(HasStatus(kEXP_STATUS_ARRAY_VALUE))  // array value
                 {
-                    if(false == CaseStatusArrayValue(Value::BOOLEAN))
+                    if(false == CaseStatusArrayValue(Value::Boolean))
                         return false;
 
                     break;
@@ -207,7 +207,7 @@ bool JsonReader::_Parse(Value* root)
             {
                 if(HasStatus(kEXP_STATUS_OBJECT_VALUE)) // obj value
                 {
-                    if(false == CaseStatusObjectValue(Value::NUMBER))
+                    if(false == CaseStatusObjectValue(Value::Number))
                         return false;
 
                     break;
@@ -215,7 +215,7 @@ bool JsonReader::_Parse(Value* root)
 
                 if(HasStatus(kEXP_STATUS_ARRAY_VALUE))  // array value
                 {
-                    if(false == CaseStatusArrayValue(Value::NUMBER))
+                    if(false == CaseStatusArrayValue(Value::Number))
                         return false;
 
                     break;
@@ -230,7 +230,7 @@ bool JsonReader::_Parse(Value* root)
             {
                 if(HasStatus(kEXP_STATUS_OBJECT_VALUE)) // obj value
                 {
-                    if(false == CaseStatusObjectValue(Value::NUL))
+                    if(false == CaseStatusObjectValue(Value::Null))
                         return false;
 
                     break;
@@ -238,7 +238,7 @@ bool JsonReader::_Parse(Value* root)
 
                 if(HasStatus(kEXP_STATUS_ARRAY_VALUE))  // array value
                 {
-                    if(false == CaseStatusArrayValue(Value::NUL))
+                    if(false == CaseStatusArrayValue(Value::Null))
                         return false;
 
                     break;
@@ -261,7 +261,7 @@ bool JsonReader::CaseStatusObjectBegin()
     if(!HasStatus(kEXP_STATUS_OBJECT_BEGIN))
         return false;
 
-    Value value(Value::OBJECT);
+    Value value(Value::Object);
     parse_stack_.push(std::move(value));
 
     //{ -> "key" or { or }
@@ -276,7 +276,7 @@ bool JsonReader::CaseStatusObjectKey()
     if(false == err_code)
         return false;
     
-    Value value(Value::KEY);
+    Value value(Value::Key);
     value.set_str(std::move(key));
     parse_stack_.push(std::move(value));
 
@@ -292,54 +292,65 @@ bool JsonReader::CaseStatusObjectValue(int type)
         return false;
 
     //key
-    if(Value::KEY != parse_stack_.top().type())
+    if(Value::String != parse_stack_.top().type())
         return false;
-    std::string key = parse_stack_.top().val();
+    const std::string& key = parse_stack_.top().AsString();
     parse_stack_.pop();
 
     //value
-    Value       value;
+    Value value;
     std::string str;
     switch(type)
     {
-        case Value::STRING:
+        case Value::String:
         {
             if(false == token_reader_->ReadString(str))
                 return false;
 
-            value.set_type(Value::STRING);
-            value.set_str(std::move(str));
-
+            value = Value(str);
             break;
         }
 
-        case Value::NUMBER:
+        case Value::Number:
         {
-            Value::TYPE num_type;
-            if(false == token_reader_->ReadNumber(str, num_type))
+            Value::ValueType value_type;
+            if(false == token_reader_->ReadNumber(str, value_type))
                 return false;
 
-            value.set_number(str, num_type);
+            switch(type)
+            {
+                case Value::ValueType::Real:
+                    value = Value(std::stod(str));
+                    break;
+
+                case Value::ValueType::Int:
+                    value = Value(static_cast<int64_t>(std::stoll(str)));
+                    break;
+                case Value::ValueType::UInt:
+                    value = Value(static_cast<uint64_t>(std::stoull(str)));
+                    break;
+
+                default:
+                    assert(0);
+            }
             break;
         }
 
-        case Value::BOOLEAN:
+        case Value::Boolean:
         {
             bool boolean;
             if(false == token_reader_->ReadBoolean(boolean))
                 return false;
 
-            value.set_type(Value::BOOLEAN);
-            value.set_boolean(boolean);
+            value = Value(boolean);
             
             break;
         }
 
-        case Value::NUL:
+        case Value::Null:
         {
             if(false == token_reader_->ReadNull())
                 return false;
-            value.set_type(Value::NUL);
 
             break;
         }
@@ -351,7 +362,7 @@ bool JsonReader::CaseStatusObjectValue(int type)
 
     //插入
     Value& object = parse_stack_.top();
-    object.PairAdd(std::move(key), std::move(value));
+    object.ObjectAdd(std::move(key), std::move(value));
 
     //"value" -> , or }
     cur_status_ = kEXP_STATUS_SEP_COMMA | kEXP_STATUS_OBJECT_END;
@@ -364,7 +375,7 @@ bool JsonReader::CaseStatusObjectEnd()
         return false;
 
     //栈顶元素类型必须是object
-    if(Value::OBJECT != parse_stack_.top().type())
+    if(Value::Object != parse_stack_.top().type())
         return false;
     
     //如果是唯一元素,则JSON解析结束
@@ -378,16 +389,16 @@ bool JsonReader::CaseStatusObjectEnd()
     parse_stack_.pop();
 
     //如果当前栈顶元素是key,则说明是{key1:{key2:value}}这种情况,添加{key2:value}到key1所属于的对象中
-    if(Value::KEY == parse_stack_.top().type())
+    if(Value::Key == parse_stack_.top().type())
     {
         //此刻当前栈元素必须>=2
         if(2 > parse_stack_.size())
             return false;
 
-        std::string key = parse_stack_.top().val();
+        std::string key = parse_stack_.top().AsString();
         parse_stack_.pop();
 
-        parse_stack_.top().PairAdd(std::move(key), std::move(object));
+        parse_stack_.top().ObjectAdd(std::move(key), std::move(object));
 
         //此时栈顶是个对象,期待下个元素是, or }
         cur_status_ = kEXP_STATUS_SEP_COMMA | kEXP_STATUS_OBJECT_END;
@@ -396,7 +407,7 @@ bool JsonReader::CaseStatusObjectEnd()
 
     //如果当前栈顶元素是array,
     //则说明是[{value}]这种情况,添加{value}到所属数组中
-    if(Value::ARRAY == parse_stack_.top().type())
+    if(Value::Array == parse_stack_.top().type())
     {
         //此刻栈顶元素必须>1
         if(1 > parse_stack_.size())
@@ -419,7 +430,7 @@ bool JsonReader::CaseStatusArrayBegin()
         return false;
 
     //添加array
-    parse_stack_.push(Value(Value::ARRAY));
+    parse_stack_.push(Value(Value::Array));
 
     //[ -> " or [0-9] or { or [ or ]
     cur_status_ = kEXP_STATUS_ARRAY_VALUE | kEXP_STATUS_OBJECT_BEGIN | kEXP_STATUS_ARRAY_BEGIN | kEXP_STATUS_ARRAY_END;
@@ -437,45 +448,55 @@ bool JsonReader::CaseStatusArrayValue(int type)
     std::string str;
     switch(type)
     {
-        case Value::STRING:
+        case Value::String:
         {
             if(false == token_reader_->ReadString(str))
                 return false;
 
-            value.set_type(Value::STRING);
-            value.set_str(std::move(str));
-
+            value = Value(std::move(str));
             break;
         }
 
-        case Value::NUMBER:
+        case Value::Number:
         {
-            Value::TYPE num_type;
-            if(false == token_reader_->ReadNumber(str, num_type))
+            Value::ValueType value_type;
+            if(false == token_reader_->ReadNumber(str, value_type))
                 return false;
 
-            value.set_number(str, num_type);
+            switch(type)
+            {
+                case Value::ValueType::Real:
+                    value = Value(std::stod(str));
+                    break;
 
+                case Value::ValueType::Int:
+                    value = Value(static_cast<int64_t>(std::stoll(str)));
+                    break;
+
+                case Value::ValueType::UInt:
+                    value = Value(static_cast<uint64_t>(std::stoull(str)));
+                    break;
+
+                default:
+                    assert(0);
+            }
             break;
         }
 
-        case Value::BOOLEAN:
+        case Value::Boolean:
         {
             bool boolean;
             if(false == token_reader_->ReadBoolean(boolean))
                 return false;
 
-            value.set_type(Value::BOOLEAN);
-            value.set_boolean(boolean);
-            
+            value = Value(boolean);
             break;
         }
 
-        case Value::NUL:
+        case Value::Null:
         {
             if(false == token_reader_->ReadNull())
                 return false;
-            value.set_type(Value::NUL);
 
             break;
         }
@@ -514,16 +535,16 @@ bool JsonReader::CaseStatusArrayEnd()
     parse_stack_.pop();
 
     //如果当前栈顶元素是key,则说明是{key1:[value]}这种情况,添加[value]到key1所属于的对象中
-    if(Value::KEY == parse_stack_.top().type())
+    if(Value::Key == parse_stack_.top().type())
     {
         //此刻当前栈元素必须>=2
         if(2 > parse_stack_.size())
             return false;
 
-        std::string key = parse_stack_.top().val();
+        std::string key = parse_stack_.top().AsString();
         parse_stack_.pop();
 
-        parse_stack_.top().PairAdd(std::move(key), std::move(array));
+        parse_stack_.top().ObjectAdd(std::move(key), std::move(array));
 
         //此时栈顶是个object,期待下个元素是, or }
         cur_status_ = kEXP_STATUS_SEP_COMMA | kEXP_STATUS_OBJECT_END;
@@ -532,7 +553,7 @@ bool JsonReader::CaseStatusArrayEnd()
 
     //如果当前栈顶元素是array,
     //则说明是[[value]]这种情况,添加[value]到所属数组中
-    if(Value::ARRAY == parse_stack_.top().type())
+    if(Value::Array == parse_stack_.top().type())
     {
         //此刻栈顶元素必须>1
         if(1 > parse_stack_.size())
@@ -565,7 +586,7 @@ bool JsonReader::CaseStatusSepComma()
         return false;
 
     //, -> "key" or [ or { or arr_val
-    //如果当前状态同时期待kEXP_STATUS_OBJECT_END,代表当前处于{key:value, key:value}状态
+    //如果当前状态同时期待kEXP_STATUS_Object_END,代表当前处于{key:value, key:value}状态
     if(HasStatus(kEXP_STATUS_OBJECT_END))
     {
         cur_status_ = kEXP_STATUS_OBJECT_KEY;

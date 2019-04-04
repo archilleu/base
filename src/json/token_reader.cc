@@ -146,7 +146,7 @@ bool TokenReader::ReadString(std::string& str)
     return false;
 }
 //---------------------------------------------------------------------------
-bool TokenReader::ReadNumber(std::string& number, Value::TYPE& type)
+bool TokenReader::ReadNumber(std::string& number, Value::ValueType& type)
 {
     //浮点数值分为2个部分构成
     //整数部分和小数部分
@@ -237,7 +237,7 @@ bool TokenReader::ReadNumber(std::string& number, Value::TYPE& type)
     //值是小数
     if(true == has_decimal)
     {
-        type = Value::REAL;
+        type = Value::Real;
         return true;
     }
 
@@ -247,7 +247,7 @@ bool TokenReader::ReadNumber(std::string& number, Value::TYPE& type)
         if((2<number.size()) && ('0'==number[1]))
             return false;
 
-        type = Value::INT;
+        type = Value::Int;
     }
     else                    //无符号整数
     {
@@ -255,7 +255,7 @@ bool TokenReader::ReadNumber(std::string& number, Value::TYPE& type)
         if((1<number.size()) &&('0'==number[0]))
             return false;
 
-        type = Value::UINT;
+        type = Value::UInt;
     }
 
     return true;

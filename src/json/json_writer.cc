@@ -33,28 +33,28 @@ void JsonWriter::ToString(const Value& value, std::string& str, bool format, int
     int type = value.type();
     switch(type)
     {
-        case Value::OBJECT:
+        case Value::Object:
             ObjectToString(value, str, format, deep);
             break;
 
-        case Value::ARRAY:
+        case Value::Array:
             ArrayToString(value, str, format, deep);
             break;
 
-        case Value::STRING:
-        case Value::KEY:
+        case Value::String:
+        case Value::Key:
             str.push_back('\"');
-                str += value.val();
+                str += value.AsString();
             str.push_back('\"');
 
             break;
 
-        case Value::INT:
-        case Value::UINT:
-        case Value::REAL:
-        case Value::BOOLEAN:
-        case Value::NUL:
-            str += value.val();
+        case Value::Int:
+        case Value::UInt:
+        case Value::Real:
+        case Value::Boolean:
+        case Value::Null:
+            str += value.AsString();
             break;
 
         default:
@@ -69,7 +69,7 @@ void JsonWriter::ObjectToString(const Value& value, std::string& str, bool forma
     str.push_back('{');
     if(format)  str.push_back('\n');
 
-    for(auto iter=value.PairIterBegin(); iter!=value.PairIterEnd(); ++iter)
+    for(auto iter=value.ObjectIterBegin(); iter!=value.ObjectIterEnd(); ++iter)
     {
         if(format)  AddTab(str, deep);
 
@@ -81,24 +81,24 @@ void JsonWriter::ObjectToString(const Value& value, std::string& str, bool forma
         //添加value
         switch(iter->second.type())
         {
-            case Value::OBJECT:
-            case Value::ARRAY:
+            case Value::Object:
+            case Value::Array:
                 ToString(iter->second, str, format, deep+1);
                 break;
 
-            case Value::STRING:
+            case Value::String:
                 str.push_back('\"');
-                    AddString(iter->second.val(), str);
+                    AddString(iter->second.AsString(), str);
                 str.push_back('\"');
                 break;
 
-            case Value::INT:
-            case Value::UINT:
-            case Value::REAL:
-            case Value::BOOLEAN:
-            case Value::NUL:
-            case Value::KEY:
-                str += iter->second.val();
+            case Value::Int:
+            case Value::UInt:
+            case Value::Real:
+            case Value::Boolean:
+            case Value::Null:
+            case Value::Key:
+                str += iter->second.AsString();
                 break;
 
             default:
@@ -129,24 +129,24 @@ void JsonWriter::ArrayToString(const Value& value, std::string& str, bool format
         //添加value
         switch(iter->type())
         {
-            case Value::OBJECT:
-            case Value::ARRAY:
+            case Value::Object:
+            case Value::Array:
                 ToString(*iter, str, format, deep+1);
                 break;
 
-            case Value::STRING:
+            case Value::String:
                 str.push_back('\"');
-                    AddString(iter->val(), str);
+                    AddString(iter->AsString(), str);
                 str.push_back('\"');
                 break;
 
-            case Value::INT:
-            case Value::UINT:
-            case Value::REAL:
-            case Value::BOOLEAN:
-            case Value::NUL:
-            case Value::KEY:
-                str += iter->val();
+            case Value::Int:
+            case Value::UInt:
+            case Value::Real:
+            case Value::Boolean:
+            case Value::Null:
+            case Value::Key:
+                str += iter->AsString();
                 break;
 
             default:
