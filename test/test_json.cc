@@ -24,422 +24,271 @@ bool Test_Value_Base()
 {
     {
     //基本操作
-    Value value_none(Value::Key);
+    {
+    Value value_none;
+    TEST_ASSERT(value_none.IsNull());
+    TEST_ASSERT(value_none.type()==Value::ValueType::Null);
+    Value value_none1;
+    TEST_ASSERT(value_none == value_none1);
+    }
+
+    {
     const char* c_str = "key";
-    value_none.set_str(c_str);
-    TEST_ASSERT(value_none.AsString() == std::string(c_str));
-
-    std::string s_str = "key";
-    value_none.set_str(s_str);
-    TEST_ASSERT(value_none.AsString() == s_str);
-    value_none.set_str(std::move(s_str));
-    TEST_ASSERT(value_none.AsString() == std::string(c_str));
-
     Value value(Value::Key);
     TEST_ASSERT(Value::Key == value.type());
-    value.set_str(c_str);
-    TEST_ASSERT(value.AsString() == std::string(c_str));
-
-    std::string str = "key";
-    value.set_str(str);
-    TEST_ASSERT(value.AsString() == str);
-    value.set_str(std::move(str));
-    TEST_ASSERT(value.AsString() == std::string(c_str));
-
-    //复制构造
-    Value val_copy(value);
-    TEST_ASSERT(value.AsString() == val_copy.AsString());
-
-    //=
-    Value val_assg = value;
-    TEST_ASSERT(value.AsString() == val_assg.AsString());
-
-    //move
-    Value val_move(std::move(val_copy));
-    TEST_ASSERT(value.AsString() == val_move.AsString());
-
-    //move==
-    Value val_move_assg = std::move(val_assg);
-    TEST_ASSERT(value.AsString() == val_move_assg.AsString());
+    TEST_ASSERT(value.IsKey());
+    value.set_key(c_str);
+    TEST_ASSERT(value.AsKey() == std::string(c_str));
+    Value value1(Value::Key);
+    value1.set_key(c_str);
+    TEST_ASSERT(value == value1);
     }
 
-    /*
-    //string
     {
-    //基本操作
-    Value value_none(Value::STRING);
     const char* c_str = "string";
-    value_none.set_str(c_str);
-    TEST_ASSERT(value_none.val() == std::string(c_str));
-
-    std::string s_str = "string";
-    value_none.set_str(s_str);
-    TEST_ASSERT(value_none.val() == s_str);
-    value_none.set_str(std::move(s_str));
-    TEST_ASSERT(value_none.val() == std::string(c_str));
-
-    Value value(Value::STRING);
-    TEST_ASSERT(Value::STRING == value.type());
+    Value value(Value::String);
+    TEST_ASSERT(Value::String == value.type());
+    TEST_ASSERT(value.IsString());
     value.set_str(c_str);
-    TEST_ASSERT(value.val() == std::string(c_str));
+    TEST_ASSERT(value.AsString() == std::string(c_str));
+    Value value1(c_str);
+    TEST_ASSERT(value == value1);
 
-    std::string str = "string";
-    value.set_str(str);
-    TEST_ASSERT(value.val() == str);
-    value.set_str(std::move(str));
-    TEST_ASSERT(value.val() == std::string(c_str));
+    std::string move_str = "string";
+    Value value_move(std::move(move_str));
+    TEST_ASSERT(value.AsString() == "string");
+    TEST_ASSERT(move_str.empty());
 
+    move_str = "string";
+    value_move.set_str(std::move(move_str));
+    TEST_ASSERT(value.AsString() == "string");
+    TEST_ASSERT(move_str.empty());
+    }
+
+    {
+    const int64_t val = 0x7FFFFFFFFFFFFFFF;
+    Value value(Value::Int);
+    TEST_ASSERT(Value::Int == value.type());
+    TEST_ASSERT(value.IsInt());
+    value.set_int(val);
+    TEST_ASSERT(value.AsInt64() == val);
+    Value value1(val);
+    TEST_ASSERT(value == value1);
+
+    const int val32 = 0x7FFFFFFF;
+    Value value32(Value::Int);
+    TEST_ASSERT(Value::Int == value32.type());
+    TEST_ASSERT(value32.IsInt());
+    value32.set_int(val32);
+    TEST_ASSERT(value32.AsInt() == val32);
+    Value value321(val32);
+    TEST_ASSERT(value32 == value321);
+
+    const uint64_t val_ = 0xFFFFFFFFFFFFFFFF;
+    Value value_(Value::UInt);
+    TEST_ASSERT(Value::UInt == value_.type());
+    TEST_ASSERT(value_.IsUInt());
+    value_.set_uint(val_);
+    TEST_ASSERT(value_.AsUInt64() == val_);
+    Value value_1(val_);
+    TEST_ASSERT(value_ == value_1);
+
+    const unsigned int val32_ = 0xFFFFFFFF;
+    Value value32_(Value::UInt);
+    TEST_ASSERT(Value::UInt == value32_.type());
+    TEST_ASSERT(value32_.IsUInt());
+    value32_.set_uint(val32_);
+    TEST_ASSERT(value32_.AsUInt() == val32_);
+    Value value321_(val32_);
+    TEST_ASSERT(value32_ == value321_);
+    }
+
+    {
+    const double d = 1.0;
+    Value value(Value::Real);
+    TEST_ASSERT(Value::Real == value.type());
+    TEST_ASSERT(value.IsReal());
+    value.set_double(d);
+    TEST_ASSERT(value.AsDouble() == d);
+    Value value1(d);
+    TEST_ASSERT(value == value1);
+    }
+
+    {
+    const bool b = true;
+    Value value(Value::Boolean);
+    TEST_ASSERT(Value::Boolean == value.type());
+    TEST_ASSERT(value.IsBoolean());
+    value.set_boolean(b);
+    TEST_ASSERT(value.AsBoolean() == b);
+    Value value1(b);
+    TEST_ASSERT(value == value1);
+    }
+
+    {
     //复制构造
-    Value val_copy(value);
-    TEST_ASSERT(value.val() == val_copy.val());
+    Value val_ori("orgin");
+    Value val_copy(val_ori);
+    TEST_ASSERT(val_ori == val_copy);
+    }
 
+    {
     //=
-    Value val_assg= value;
-    TEST_ASSERT(value.val() == val_assg.val());
+    Value val_ori("orgin");
+    Value val_assg = val_ori;
+    TEST_ASSERT(val_ori == val_assg);
+    }
 
+    {
     //move
-    Value val_move(std::move(val_copy));
-    TEST_ASSERT(value.val() == val_move.val());
+    Value val_ori("orgin");
+    Value val_move(std::move(val_ori));
+    TEST_ASSERT(val_ori.type() == Value::ValueType::Null);
+    TEST_ASSERT(val_move.type() == Value::ValueType::String);
+    }
 
+    {
     //move==
-    Value val_move_assg = std::move(val_assg);
-    TEST_ASSERT(value.val() == val_move_assg.val());
+    Value val_ori("orgin");
+    Value val_move_assg = std::move(val_ori);
+    TEST_ASSERT(val_ori.type() == Value::ValueType::Null);
+    TEST_ASSERT(val_move_assg.type() == Value::ValueType::String);
     }
 
-    //int
-    {
-    //基本操作
-    Value value_none(Value::INT);
-    int64_t int64 = 0x7FFFFFFFFFFFFFFF;
-    value_none.set_int(int64);
-    TEST_ASSERT(value_none.val() == base::CombineString("%" PRId64 "", int64));
-    TEST_ASSERT(value_none.get_int() == int64);
-
-    Value value(Value::INT);
-    TEST_ASSERT(Value::INT == value.type());
-    value.set_int(int64);
-    TEST_ASSERT(value.val() == base::CombineString("%" PRId64 "", int64));
-    TEST_ASSERT(value.get_int() == int64);
-
-    //复制构造
-    Value val_copy(value);
-    TEST_ASSERT(value.val() == val_copy.val());
-
-    //=
-    Value val_assg= value;
-    TEST_ASSERT(value.val() == val_assg.val());
-
-    //move
-    Value val_move(std::move(val_copy));
-    TEST_ASSERT(value.val() == val_move.val());
-
-    //move==
-    Value val_move_assg = std::move(val_assg);
-    TEST_ASSERT(value.val() == val_move_assg.val());
     }
-
-    //uint
-    {
-    //基本操作
-    Value value_none(Value::UINT);
-    uint64_t uint64 = 0xFFFFFFFFFFFFFFFF;
-    value_none.set_uint(uint64);
-    TEST_ASSERT(value_none.val() == base::CombineString("%" PRIu64 "", uint64));
-    TEST_ASSERT(value_none.get_uint() == uint64);
-
-    Value value(Value::UINT);
-    TEST_ASSERT(Value::UINT == value.type());
-    value.set_uint(uint64);
-    TEST_ASSERT(value.val() == base::CombineString("%" PRIu64 "", uint64));
-    TEST_ASSERT(value.get_uint() == uint64);
-
-    //复制构造
-    Value val_copy(value);
-    TEST_ASSERT(value.val() == val_copy.val());
-
-    //=
-    Value val_assg= value;
-    TEST_ASSERT(value.val() == val_assg.val());
-
-    //move
-    Value val_move(std::move(val_copy));
-    TEST_ASSERT(value.val() == val_move.val());
-
-    //move==
-    Value val_move_assg = std::move(val_assg);
-    TEST_ASSERT(value.val() == val_move_assg.val());
-    }
-
-    //real
-    {
-    //基本操作
-    Value value_none(Value::REAL);
-    double real = 1.7E+100;
-    value_none.set_double(real);
-    double real1 = value_none.get_double();
-    TEST_ASSERT(0 == (real - real1));
-    TEST_ASSERT(value_none.get_double() == real);
-
-    Value value(Value::REAL);
-    TEST_ASSERT(Value::REAL == value.type());
-    value.set_double(real);
-    TEST_ASSERT(value.get_double() == real);
-
-    //复制构造
-    Value val_copy(value);
-    TEST_ASSERT(value.val() == val_copy.val());
-
-    //=
-    Value val_assg= value;
-    TEST_ASSERT(value.val() == val_assg.val());
-
-    //move
-    Value val_move(std::move(val_copy));
-    TEST_ASSERT(value.val() == val_move.val());
-
-    //move==
-    Value val_move_assg = std::move(val_assg);
-    TEST_ASSERT(value.val() == val_move_assg.val());
-    }
-
-    //boolean true
-    {
-    //基本操作
-    Value value_none(Value::BOOLEAN);
-    bool boolean = true;
-    value_none.set_boolean(boolean);
-    TEST_ASSERT(value_none.val() == "true");
-    TEST_ASSERT(value_none.get_boolean() == boolean);
-
-    Value value(Value::BOOLEAN);
-    TEST_ASSERT(Value::BOOLEAN == value.type());
-    value.set_boolean(boolean);
-    TEST_ASSERT(value.val() == "true");
-    TEST_ASSERT(value.get_boolean() == boolean);
-
-    //复制构造
-    Value val_copy(value);
-    TEST_ASSERT(value.val() == val_copy.val());
-
-    //=
-    Value val_assg= value;
-    TEST_ASSERT(value.val() == val_assg.val());
-
-    //move
-    Value val_move(std::move(val_copy));
-    TEST_ASSERT(value.val() == val_move.val());
-
-    //move==
-    Value val_move_assg = std::move(val_assg);
-    TEST_ASSERT(value.val() == val_move_assg.val());
-    }
-
-    //boolean false
-    {
-    //基本操作
-    Value value_none(Value::BOOLEAN);
-    bool boolean = false;
-    value_none.set_boolean(boolean);
-    TEST_ASSERT(value_none.val() == "false");
-    TEST_ASSERT(value_none.get_boolean() == boolean);
-
-    Value value(Value::BOOLEAN);
-    TEST_ASSERT(Value::BOOLEAN == value.type());
-    value.set_boolean(boolean);
-    TEST_ASSERT(value.val() == "false");
-    TEST_ASSERT(value.get_boolean() == boolean);
-
-    //复制构造
-    Value val_copy(value);
-    TEST_ASSERT(value.val() == val_copy.val());
-
-    //=
-    Value val_assg= value;
-    TEST_ASSERT(value.val() == val_assg.val());
-
-    //move
-    Value val_move(std::move(val_copy));
-    TEST_ASSERT(value.val() == val_move.val());
-
-    //move==
-    Value val_move_assg = std::move(val_assg);
-    TEST_ASSERT(value.val() == val_move_assg.val());
-    }
-
-    //null
-    {
-    //基本操作
-    Value value_none(Value::NUL);
-    TEST_ASSERT(value_none.val() == "null");
-
-    Value value(Value::NUL);
-    TEST_ASSERT(value.val() == "null");
-
-    //复制构造
-    Value val_copy(value);
-    TEST_ASSERT(value.val() == val_copy.val());
-
-    //=
-    Value val_assg= value;
-    TEST_ASSERT(value.val() == val_assg.val());
-
-    //move
-    Value val_move(std::move(val_copy));
-    TEST_ASSERT(value.val() == val_move.val());
-
-    //move==
-    Value val_move_assg = std::move(val_assg);
-    TEST_ASSERT(value.val() == val_move_assg.val());
-    }
-
-    //初始即构造
-    {
-    std::string v_str = "str";
-    Value v_str1("str");
-    Value v_str2(std::string("str"));
-    Value v_str3(std::move(v_str));
-    TEST_ASSERT(Value::STRING == v_str1.type());
-    TEST_ASSERT(Value::STRING == v_str2.type());
-    TEST_ASSERT(Value::STRING == v_str3.type());
-    TEST_ASSERT("str" == v_str1.val());
-    TEST_ASSERT("str" == v_str2.val());
-    TEST_ASSERT("str" == v_str3.val());
-
-    int64_t int64 = 1;
-    Value v_int(int64);
-    TEST_ASSERT(Value::INT == v_int.type());
-    TEST_ASSERT(1 == v_int.get_int());
-
-    uint64_t uint64 = 1;
-    Value v_uint(uint64);
-    TEST_ASSERT(Value::UINT == v_uint.type());
-    TEST_ASSERT(1 == v_uint.get_uint());
-
-    bool boolean = true;
-    Value v_boolean(boolean);
-    TEST_ASSERT(Value::BOOLEAN == v_boolean.type());
-    TEST_ASSERT(true == v_boolean.get_boolean());
-
-    double real = 1;
-    Value v_real(real);
-    TEST_ASSERT(Value::REAL == v_real.type());
-
-    }
-
-    {
-        Value valuen;
-        Value values("aaa");
-        valuen = Value(Value::OBJECT);
-        valuen = Value(Value::ARRAY);
-        values = Value(Value::OBJECT);
-        values = Value(Value::ARRAY);
-    }
-    */
 
     return true;
 }
 //---------------------------------------------------------------------------
-/*
 bool Test_Value_Obj()
 {
     //object
-    Value value_none(Value::OBJECT);
-    TEST_ASSERT(value_none.type() == Value::OBJECT);
-    TEST_ASSERT(value_none.val() == "null");
+    {
+    Value value_none(Value::Object);
+    TEST_ASSERT(value_none.type() == Value::Object);
+    TEST_ASSERT(value_none.IsObject());
+    TEST_ASSERT(value_none.Size() == 0);
+    Value& v1 = value_none["v1"];
+    TEST_ASSERT(v1.type() == Value::Null);
+    v1 = Value("k1");
+    TEST_ASSERT(value_none.Size() == 1);
+    v1 = value_none["v1"];
+    TEST_ASSERT(v1.AsString() == "k1");
 
-    Value value(Value::OBJECT);
-    TEST_ASSERT(value.type() == Value::OBJECT);
-    TEST_ASSERT(value.val() == "null");
+    Value value(Value::Object);
+    TEST_ASSERT(value.type() == Value::Object);
 
     //初始状态
-    TEST_ASSERT(0 == value.PairSize());
-    TEST_ASSERT(false == value.PairDel("none"));
-    TEST_ASSERT(false == value.PairDel(std::string("none")));
+    TEST_ASSERT(0 == value.Size());
+    TEST_ASSERT(false == value.ObjectDel("none"));
+    TEST_ASSERT(false == value.ObjectDel(std::string("none")));
 
     Value v;
-    TEST_ASSERT(false == value.PairGet("none", &v));
-    TEST_ASSERT(false == value.PairGet(std::string("none"), &v));
+    TEST_ASSERT(false == value.ObjectGet("none", v));
+    TEST_ASSERT(false == value.ObjectGet(std::string("none"), v));
     size_t count = 0;
-    for(auto iter=value.PairIterBegin(); value.PairIterEnd()!=iter; ++iter)
-        count ++;
+    for(auto iter=value.ObjectIterBegin(); value.ObjectIterEnd()!=iter; ++iter)
+        count++;
     TEST_ASSERT(0 == count);
-
-    //添加pair
-    {
-    Value v1(Value::INT);
-    v1.set_int(-1);
-    Value v2(Value::UINT);
-    v2.set_uint(1);
-    Value v3(Value::REAL);
-    v3.set_double(1.1);
-    Value v4(Value::BOOLEAN);
-    v4.set_boolean(true);
-    Value v5(Value::BOOLEAN);
-    v5.set_boolean(false);
-    Value v6(Value::NUL);
-
-    value.PairAdd("key1", std::move(v1));
-    value.PairAdd(std::string("key2"), std::move(v2));
-    std::string key3 = "key3";
-    value.PairAdd(std::move(key3), std::move(v3));
-    value.PairAdd("key4", std::move(v4));
-    value.PairAdd(std::string("key5"), std::move(v5));
-    std::string key6 = "key6";
-    value.PairAdd(std::move(key6), std::move(v6));
     }
 
-    size_t size = value.PairSize();
-    TEST_ASSERT(6 == size);
+    //添加Object
+    Value value(Value::Object);
+    {
+    Value v0;
+    Value v1 = -1;
+    Value v2 = 1;
+    Value v3 = 1.1;
+    Value v4 = true;
+    Value v5 = false;
+    Value v6 = "string";
+    Value v7(Value::Object);
+    Value v8(Value::Array);
+
+    value.ObjectAdd("key0", v0);
+    value.ObjectAdd("key1", std::move(v1));
+    value.ObjectAdd(std::string("key2"), std::move(v2));
+    std::string key3 = "key3";
+    value.ObjectAdd(std::move(key3), std::move(v3));
+    value.ObjectAdd("key4", std::move(v4));
+    value.ObjectAdd(std::string("key5"), std::move(v5));
+    std::string key6 = "key6";
+    value.ObjectAdd(std::move(key6), std::move(v6));
+    value.ObjectAdd("key7", std::move(v7));
+    value.ObjectAdd("key8", std::move(v8));
+
+    size_t size = value.Size();
+    TEST_ASSERT(9 == size);
+    }
+    {
 
     //检查添加的元素
-    {
+    Value v0;
+    TEST_ASSERT(true == value.ObjectGet("key0", v0));
+    TEST_ASSERT(v0.IsNull());
+
     Value v1;
-    TEST_ASSERT(true == value.PairGet("key1", &v1));
-    TEST_ASSERT(v1.get_int() == -1);
+    TEST_ASSERT(true == value.ObjectGet("key1", v1));
+    TEST_ASSERT(v1.AsInt() == -1);
 
     Value v2;
-    TEST_ASSERT(true == value.PairGet(std::string("key2"), &v2));
-    TEST_ASSERT(v2.get_uint() == 1);
+    TEST_ASSERT(true == value.ObjectGet(std::string("key2"), v2));
+    TEST_ASSERT(v2.AsInt() == 1);
 
     Value v3;
-    TEST_ASSERT(true == value.PairGet("key3", &v3));
-    TEST_ASSERT((v3.get_double() - 1.1)<0.01);
+    TEST_ASSERT(true == value.ObjectGet("key3", v3));
+    TEST_ASSERT((v3.AsDouble() - 1.1)<0.01);
 
     Value v4;
-    TEST_ASSERT(true == value.PairGet("key4", &v4));
-    TEST_ASSERT(v4.get_boolean() == true);
+    TEST_ASSERT(true == value.ObjectGet("key4", v4));
+    TEST_ASSERT(v4.AsBoolean() == true);
 
     Value v5;
-    TEST_ASSERT(true == value.PairGet("key5", &v5));
-    TEST_ASSERT(v5.get_boolean() == false);
+    TEST_ASSERT(true == value.ObjectGet("key5", v5));
+    TEST_ASSERT(v5.AsBoolean() == false);
 
     Value v6;
-    TEST_ASSERT(true == value.PairGet("key6", &v6));
-    TEST_ASSERT(v6.type() == Value::NUL);
+    TEST_ASSERT(true == value.ObjectGet("key6", v6));
+    TEST_ASSERT(v6.AsString() == "string");
+    const char* new_string = "new string";
+    v6.set_str(new_string);
+    TEST_ASSERT(true == value.ObjectGet("key6", v6));
+    TEST_ASSERT(new_string == v6.AsString());
 
-    for(auto iter=value.PairIterBegin(); value.PairIterEnd()!=iter; ++iter)
+    Value v7;
+    TEST_ASSERT(true == value.ObjectGet("key7", v7));
+    TEST_ASSERT(v7.IsObject());
+
+    Value v8;
+    TEST_ASSERT(true == value.ObjectGet("key8", v8));
+    TEST_ASSERT(v8.IsArray());
+
+    for(auto iter=value.ObjectIterBegin(); value.ObjectIterEnd()!=iter; ++iter)
     {
-        std::cout << "key:" << iter->first << " value:" << iter->second.val() << std::endl;
+        //FIXME:shuchustirng
+        //std::cout << "key:" << iter->first << " value:" << iter->second.val() << std::endl;
     }
 
     //添加同样key值的会被覆盖
-    Value v1_cover(Value::INT);
-    v1_cover.set_int(2);
-    value.PairAdd("key1", std::move(v1_cover));
+    Value v1_cover = 2;
+    value.ObjectAdd("key1", std::move(v1_cover));
     Value v1_cover_get;
-    TEST_ASSERT(true ==  value.PairGet("key1", &v1_cover_get));
-    TEST_ASSERT(v1_cover_get.get_int()==2);
+    TEST_ASSERT(true ==  value.ObjectGet("key1", v1_cover_get));
+    TEST_ASSERT(v1_cover_get.AsInt() == 2);
 
     //删除key值
-    TEST_ASSERT(value.PairDel("key1"));
-    TEST_ASSERT(value.PairDel("key2"));
-    TEST_ASSERT(value.PairDel("key3"));
-    TEST_ASSERT(value.PairDel("key4"));
-    TEST_ASSERT(value.PairDel("key5"));
-    TEST_ASSERT(value.PairDel("key6"));
+    TEST_ASSERT(value.ObjectDel("key0"));
+    TEST_ASSERT(value.ObjectDel("key1"));
+    TEST_ASSERT(value.ObjectDel("key2"));
+    TEST_ASSERT(value.ObjectDel("key3"));
+    TEST_ASSERT(value.ObjectDel("key4"));
+    TEST_ASSERT(value.ObjectDel("key5"));
+    TEST_ASSERT(value.ObjectDel("key6"));
+    TEST_ASSERT(value.ObjectDel("key7"));
+    TEST_ASSERT(value.ObjectDel("key8"));
 
-    TEST_ASSERT(0 == value.PairSize());
-    for(auto iter=value.PairIterBegin(); value.PairIterEnd()!=iter; ++iter)
+    TEST_ASSERT(0 == value.Size());
+    for(auto iter=value.ObjectIterBegin(); value.ObjectIterEnd()!=iter; ++iter)
     {
         //没有元素
         assert(0);
@@ -448,18 +297,23 @@ bool Test_Value_Obj()
 
     //拷贝构造等等
     {
-    Value val(Value::OBJECT);
-    Value v1(Value::OBJECT);
-    value.PairAdd("key", std::move(v1));
+    Value val_ori(Value::Object);
+    Value v1(Value::Object);
+    val_ori.ObjectAdd("key", std::move(v1));
 
-    Value val_copy(val);
-    Value val_assg = value;
+    Value val_copy(val_ori);
+    Value val_assg = val_ori;
+    TEST_ASSERT(val_copy.Size() == 1);
+    TEST_ASSERT(val_copy == val_assg);
     Value val_move_copy(std::move(val_copy));
     Value val_move_asg = std::move(val_assg);
+    TEST_ASSERT(val_copy.IsNull());
+    TEST_ASSERT(val_assg.IsNull());
     }
 
     return true;
 }
+/*
 //---------------------------------------------------------------------------
 bool Test_Value_Array()
 {
@@ -1215,7 +1069,7 @@ int main(int, char**)
     TestTitle();
 
     Test_Value_Base();
-  //  Test_Value_Obj();
+    Test_Value_Obj();
   //  Test_Value_Array();
   //  Test_Value_Overload();
   //  Test_CharReader();

@@ -45,6 +45,7 @@ public:
     Value(const char* value);
     Value(int value);
     Value(int64_t value);
+    Value(unsigned int value);
     Value(uint64_t value);
     Value(double value);
     Value(bool value);
@@ -66,6 +67,19 @@ public:
     void set_str(const char* str);
     void set_str(const std::string& str);
     void set_str(std::string&& str);
+    void set_key(const char* str);
+    void set_key(const std::string& str);
+    void set_key(std::string&& str);
+
+    bool IsInt() const;
+    bool IsUInt() const;
+    bool IsBoolean() const;
+    bool IsReal() const;
+    bool IsString() const;
+    bool IsArray() const;
+    bool IsObject() const;
+    bool IsNull() const;
+    bool IsKey() const;
 
     int AsInt() const;
     int64_t AsInt64() const;
@@ -76,6 +90,10 @@ public:
     double AsDouble() const;
     std::string& AsString();
     const std::string& AsString() const;
+    std::string& AsKey();
+    const std::string& AsKey() const;
+
+    size_t Size() const;
 
     //ObjectValue
     Value& ObjectAdd(const std::string& key, const Value& value);
@@ -88,17 +106,14 @@ public:
     bool ObjectDel(const std::string& key);
     bool ObjectDel(const char* key);
 
-    bool ObjectGet(const std::string& key, Value* value) const;
-    bool ObjectGet(const char* key, Value* value) const;
-
-    size_t ObjectSize() const;
+    bool ObjectGet(const std::string& key, Value& value) const;
+    bool ObjectGet(const char* key, Value& value) const;
 
     ObjectValueIter ObjectIterBegin() const { return value_.object_->begin(); }
     ObjectValueIter ObjectIterEnd() const { return value_.object_->end(); }
 
     //array
     void ArrayResize(size_t size);
-    size_t ArraySize() const;
 
     void ArraySet(size_t index, const Value& value);
     void ArraySet(size_t index, const Value&& value);
@@ -121,6 +136,8 @@ public:
 
     Value& operator[](unsigned int index); //参数类型原本为size_t,但是index=0和上面的const char* 有冲突，所以定义为int
     const Value& operator[](int index) const;
+
+    bool operator==(const Value& other) const;
 
 //输出Value字符串值
 public:

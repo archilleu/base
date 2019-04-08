@@ -11,6 +11,7 @@ namespace base
 
 namespace json
 {
+
 //---------------------------------------------------------------------------
 Value::Value(ValueType type)
 {
@@ -50,6 +51,13 @@ Value::Value(int64_t value)
 {
     InitPayload(ValueType::Int);
     value_.int_ = value;
+    return;
+}
+//---------------------------------------------------------------------------
+Value::Value(unsigned int value)
+{
+    InitPayload(ValueType::UInt);
+    value_.uint_ = value;
     return;
 }
 //---------------------------------------------------------------------------
@@ -159,6 +167,69 @@ void Value::set_str(std::string&& str)
     *value_.string_ = std::move(str);
 }
 //---------------------------------------------------------------------------
+void Value::set_key(const char* str)
+{
+    assert(type() == ValueType::Key);
+    *value_.string_ = str;
+}
+//---------------------------------------------------------------------------
+void Value::set_key(const std::string& str)
+{
+    assert(type() == ValueType::Key);
+    *value_.string_ = str;
+}
+//---------------------------------------------------------------------------
+void Value::set_key(std::string&& str)
+{
+    assert(type() == ValueType::Key);
+    *value_.string_ = std::move(str);
+}
+//---------------------------------------------------------------------------
+bool Value::IsInt() const
+{
+    return (type()==ValueType::Int);
+}
+//---------------------------------------------------------------------------
+bool Value::IsUInt() const
+{
+    return (type()==ValueType::UInt);
+}
+//---------------------------------------------------------------------------
+bool Value::IsBoolean() const
+{
+    return (type()==ValueType::Boolean);
+}
+//---------------------------------------------------------------------------
+bool Value::IsReal() const
+{
+    return (type()==ValueType::Real);
+}
+//---------------------------------------------------------------------------
+bool Value::IsString() const
+{
+    return (type()==ValueType::String);
+}
+//---------------------------------------------------------------------------
+bool Value::IsArray() const
+{
+    return (type()==ValueType::Array);
+}
+//---------------------------------------------------------------------------
+bool Value::IsObject() const
+{
+    return (type()==ValueType::Object);
+}
+//---------------------------------------------------------------------------
+bool Value::IsNull() const
+{
+    return (type()==ValueType::Null);
+}
+//---------------------------------------------------------------------------
+bool Value::IsKey() const
+{
+    return (type()==ValueType::Key);
+}
+//---------------------------------------------------------------------------
 int Value::AsInt() const
 {
     assert(type() == ValueType::Int);
@@ -174,12 +245,12 @@ int64_t Value::AsInt64() const
 unsigned int Value::AsUInt() const
 {
     assert(type() == ValueType::UInt);
-    return static_cast<unsigned int>(value_.int_);
+    return static_cast<unsigned int>(value_.uint_);
 }
 //---------------------------------------------------------------------------
 uint64_t Value::AsUInt64() const
 {
-    assert(type() == ValueType::Int);
+    assert(type() == ValueType::UInt);
     return value_.uint_;
 }
 //---------------------------------------------------------------------------
@@ -211,6 +282,33 @@ const std::string& Value::AsString() const
 {
     assert(type() == ValueType::String);
     return *value_.string_;
+}
+//---------------------------------------------------------------------------
+std::string& Value::AsKey()
+{
+    assert(type() == ValueType::Key);
+    return *value_.string_;
+}
+//---------------------------------------------------------------------------
+const std::string& Value::AsKey() const
+{
+    assert(type() == ValueType::Key);
+    return *value_.string_;
+}
+//---------------------------------------------------------------------------
+size_t Value::Size() const
+{
+    switch(type())
+    {
+        case ValueType::Object:
+            return value_.object_->size();
+
+        case ValueType::Array:
+            return value_.array_->size();
+
+        default:
+            return 0;
+    }
 }
 //---------------------------------------------------------------------------
 Value& Value::ObjectAdd(const std::string& key, const Value& value)
@@ -260,12 +358,12 @@ bool Value::ObjectDel(const char* key)
     return (1 == nums);
 }
 //---------------------------------------------------------------------------
-bool Value::ObjectGet(const std::string& key, Value* value) const
+bool Value::ObjectGet(const std::string& key, Value& value) const
 {
     return ObjectGet(key.c_str(), value);
 }
 //---------------------------------------------------------------------------
-bool Value::ObjectGet(const char* key, Value* value) const
+bool Value::ObjectGet(const char* key, Value& value) const
 {
     assert(type() == ValueType::Object);
 
@@ -273,14 +371,8 @@ bool Value::ObjectGet(const char* key, Value* value) const
     if(value_.object_->end() == iter)
         return false;
 
-    *value = iter->second;
+    value = iter->second;
     return true;
-}
-//---------------------------------------------------------------------------
-size_t Value::ObjectSize() const
-{
-    assert(type() == ValueType::Object);
-    return value_.object_->size();
 }
 //---------------------------------------------------------------------------
 void Value::ArrayResize(size_t size)
@@ -289,13 +381,6 @@ void Value::ArrayResize(size_t size)
 
     value_.array_->resize(size);
     return;
-}
-//---------------------------------------------------------------------------
-size_t Value::ArraySize() const
-{
-    assert(type() == ValueType::Array);
-
-    return value_.array_->size();
 }
 //---------------------------------------------------------------------------
 void Value::ArraySet(size_t index, const Value& value)
@@ -391,6 +476,54 @@ std::string Value::ToString(bool format)
     return JsonWriter(*this).ToString(format);
 }
 //---------------------------------------------------------------------------
+bool Value::operator==(const Value& other) const
+{
+    if(this == &other)
+        return true;
+
+    if(type() != other.type())
+        return false;
+
+    switch(type())
+    {
+        case ValueType::Object:
+            return ((value_.object_->size()==other.value_.object_->size()) &&
+                (*value_.object_==*other.value_.object_));
+
+        case ValueType::Array:
+            return ((value_.array_->size()==other.value_.array_->size()) &&
+                (*value_.array_==*other.value_.array_));
+
+        case ValueType::Key:
+        case ValueType::String:
+            return (*value_.string_==*other.value_.string_);
+
+        case Boolean:
+            return (value_.bool_==other.value_.bool_);
+
+        case Int:
+            return (value_.int_==other.value_.int_);
+
+        case UInt:
+            return (value_.uint_==other.value_.uint_);
+
+        case Real:
+            return (value_.real_==other.value_.real_);
+
+        case Number:
+            return ((value_.int_==other.value_.int_)||
+                    (value_.uint_==other.value_.uint_)||
+                    (value_.real_==other.value_.real_));
+        case Null:
+            return true;
+
+        default:
+            assert(0);
+    }
+
+    return false;
+}
+//---------------------------------------------------------------------------
 void Value::InitPayload(ValueType value_type)
 {
     set_type(value_type);
@@ -404,6 +537,7 @@ void Value::InitPayload(ValueType value_type)
             value_.array_ = new ArrayValue();
             break;
 
+        case ValueType::Key:
         case ValueType::String:
             value_.string_ = new std::string();
             break;
@@ -437,6 +571,7 @@ void Value::DupPayload(const Value& other)
             value_.array_ = new ArrayValue(*other.value_.array_);
             break;
 
+        case ValueType::Key:
         case ValueType::String:
             value_.string_ = new std::string(*other.value_.string_);
             break;
@@ -467,6 +602,7 @@ void Value::ReleasePayload()
             delete value_.array_;
             break;
 
+        case ValueType::Key:
         case ValueType::String:
             delete value_.string_;
             break;
