@@ -362,7 +362,7 @@ bool JsonReader::CaseStatusObjectValue(int type)
 
     //插入
     Value& object = parse_stack_.top();
-    object.ObjectAdd(std::move(key), std::move(value));
+    object[std::move(key)] = std::move(value);
 
     //"value" -> , or }
     cur_status_ = kEXP_STATUS_SEP_COMMA | kEXP_STATUS_OBJECT_END;
@@ -398,7 +398,7 @@ bool JsonReader::CaseStatusObjectEnd()
         std::string key = parse_stack_.top().AsString();
         parse_stack_.pop();
 
-        parse_stack_.top().ObjectAdd(std::move(key), std::move(object));
+        parse_stack_.top()[std::move(key)] = std::move(object);
 
         //此时栈顶是个对象,期待下个元素是, or }
         cur_status_ = kEXP_STATUS_SEP_COMMA | kEXP_STATUS_OBJECT_END;
@@ -413,7 +413,7 @@ bool JsonReader::CaseStatusObjectEnd()
         if(1 > parse_stack_.size())
             return false;
 
-        parse_stack_.top().ArrayAdd(std::move(object));
+        parse_stack_.top().ArrayAppend(std::move(object));
 
         //此时栈顶为数组,期待下个元素是, or ]
         cur_status_ = kEXP_STATUS_SEP_COMMA | kEXP_STATUS_ARRAY_END;
@@ -507,7 +507,7 @@ bool JsonReader::CaseStatusArrayValue(int type)
 
     //插入
     Value& object = parse_stack_.top();
-    object.ArrayAdd(std::move(value));
+    object.ArrayAppend(std::move(value));
 
     //"value" -> , or ]
     cur_status_ = kEXP_STATUS_SEP_COMMA | kEXP_STATUS_ARRAY_END;
@@ -544,7 +544,7 @@ bool JsonReader::CaseStatusArrayEnd()
         std::string key = parse_stack_.top().AsString();
         parse_stack_.pop();
 
-        parse_stack_.top().ObjectAdd(std::move(key), std::move(array));
+        parse_stack_.top()[std::move(key)] = std::move(array);
 
         //此时栈顶是个object,期待下个元素是, or }
         cur_status_ = kEXP_STATUS_SEP_COMMA | kEXP_STATUS_OBJECT_END;
@@ -559,7 +559,7 @@ bool JsonReader::CaseStatusArrayEnd()
         if(1 > parse_stack_.size())
             return false;
 
-        parse_stack_.top().ArrayAdd(std::move(array));
+        parse_stack_.top().ArrayAppend(std::move(array));
 
         //此时栈顶为数组,期待下个元素是, or ]
         cur_status_ = kEXP_STATUS_SEP_COMMA | kEXP_STATUS_ARRAY_END;

@@ -157,6 +157,157 @@ bool Test_Value_Base()
 
     }
 
+    {
+    //异常操作
+    Value v_exception;
+    try
+    {
+        v_exception.set_int(1);
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.set_uint(1);
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.set_boolean(1);
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.set_double(1);
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.set_str("aaa");
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.set_str("aaa");
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.set_str(std::string("aaa"));
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.set_key("key");
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.set_key(std::string("key"));
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+
+
+    try
+    {
+        v_exception.AsInt();
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.AsInt64();
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.AsUInt();
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.AsUInt64();
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.AsBoolean();
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.AsFloat();
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.AsDouble();
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.AsString();
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    try
+    {
+        v_exception.AsKey();
+        TEST_ASSERT(false);
+    }catch(type_error e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    }
+
     return true;
 }
 //---------------------------------------------------------------------------
@@ -174,19 +325,25 @@ bool Test_Value_Obj()
     TEST_ASSERT(value_none.Size() == 1);
     v1 = value_none["v1"];
     TEST_ASSERT(v1.AsString() == "k1");
+    TEST_ASSERT(false == value_none.ObjectDel("none"));
+    TEST_ASSERT(false == value_none.ObjectDel(std::string("none")));
 
-    Value value(Value::Object);
+    const Value value(Value::Object);
     TEST_ASSERT(value.type() == Value::Object);
 
     //初始状态
     TEST_ASSERT(0 == value.Size());
-    TEST_ASSERT(false == value.ObjectDel("none"));
-    TEST_ASSERT(false == value.ObjectDel(std::string("none")));
 
-    Value v;
-    TEST_ASSERT(false == value.ObjectGet("none", v));
-    TEST_ASSERT(false == value.ObjectGet(std::string("none"), v));
+    const Value& v = value["none"];
+    TEST_ASSERT(Value::NullValue == v);
     size_t count = 0;
+    for(auto iter=value.ObjectIterBegin(); value.ObjectIterEnd()!=iter; ++iter)
+        count++;
+    TEST_ASSERT(0 == count);
+
+    const Value& v3 = value.ObjectGet("none");
+    TEST_ASSERT(Value::NullValue == v3);
+    count = 0;
     for(auto iter=value.ObjectIterBegin(); value.ObjectIterEnd()!=iter; ++iter)
         count++;
     TEST_ASSERT(0 == count);
@@ -205,62 +362,53 @@ bool Test_Value_Obj()
     Value v7(Value::Object);
     Value v8(Value::Array);
 
-    value.ObjectAdd("key0", v0);
-    value.ObjectAdd("key1", std::move(v1));
-    value.ObjectAdd(std::string("key2"), std::move(v2));
+    value["key0"] = v0;
+    value["key1"] = std::move(v1);
+    value[std::string("key2")] = std::move(v2);
     std::string key3 = "key3";
-    value.ObjectAdd(std::move(key3), std::move(v3));
-    value.ObjectAdd("key4", std::move(v4));
-    value.ObjectAdd(std::string("key5"), std::move(v5));
+    value[key3] = std::move(v3);
+    value["key4"] = std::move(v4);
+    value[std::string("key5")] = std::move(v5);
     std::string key6 = "key6";
-    value.ObjectAdd(std::move(key6), std::move(v6));
-    value.ObjectAdd("key7", std::move(v7));
-    value.ObjectAdd("key8", std::move(v8));
+    value[std::move(key6)] = std::move(v6);
+    value["key7"] = std::move(v7);
+    value["key8"] = std::move(v8);
 
     size_t size = value.Size();
     TEST_ASSERT(9 == size);
     }
-    {
 
+    {
     //检查添加的元素
-    Value v0;
-    TEST_ASSERT(true == value.ObjectGet("key0", v0));
+    const Value& v0 = value["key0"];
     TEST_ASSERT(v0.IsNull());
 
-    Value v1;
-    TEST_ASSERT(true == value.ObjectGet("key1", v1));
+    const Value& v1 = value["key1"];
     TEST_ASSERT(v1.AsInt() == -1);
 
-    Value v2;
-    TEST_ASSERT(true == value.ObjectGet(std::string("key2"), v2));
+    const Value& v2 = value[std::string("key2")];
     TEST_ASSERT(v2.AsInt() == 1);
 
-    Value v3;
-    TEST_ASSERT(true == value.ObjectGet("key3", v3));
-    TEST_ASSERT((v3.AsDouble() - 1.1)<0.01);
+    const Value& v3 = value["key3"];
+    TEST_ASSERT((v3.AsDouble() - 1.1) < 0.01);
 
-    Value v4;
-    TEST_ASSERT(true == value.ObjectGet("key4", v4));
+    const Value& v4 = value["key4"];
     TEST_ASSERT(v4.AsBoolean() == true);
 
-    Value v5;
-    TEST_ASSERT(true == value.ObjectGet("key5", v5));
+    const Value& v5 = value["key5"];
     TEST_ASSERT(v5.AsBoolean() == false);
 
-    Value v6;
-    TEST_ASSERT(true == value.ObjectGet("key6", v6));
+    Value& v6 = value["key6"];
     TEST_ASSERT(v6.AsString() == "string");
     const char* new_string = "new string";
     v6.set_str(new_string);
-    TEST_ASSERT(true == value.ObjectGet("key6", v6));
-    TEST_ASSERT(new_string == v6.AsString());
+    const Value& v61 = value["key6"];
+    TEST_ASSERT(new_string == v61.AsString());
 
-    Value v7;
-    TEST_ASSERT(true == value.ObjectGet("key7", v7));
+    const Value& v7 = value["key7"];
     TEST_ASSERT(v7.IsObject());
 
-    Value v8;
-    TEST_ASSERT(true == value.ObjectGet("key8", v8));
+    const Value& v8 = value["key8"];
     TEST_ASSERT(v8.IsArray());
 
     for(auto iter=value.ObjectIterBegin(); value.ObjectIterEnd()!=iter; ++iter)
@@ -271,9 +419,8 @@ bool Test_Value_Obj()
 
     //添加同样key值的会被覆盖
     Value v1_cover = 2;
-    value.ObjectAdd("key1", std::move(v1_cover));
-    Value v1_cover_get;
-    TEST_ASSERT(true ==  value.ObjectGet("key1", v1_cover_get));
+    value["key1"] =  std::move(v1_cover);
+    const Value& v1_cover_get = value["key1"];
     TEST_ASSERT(v1_cover_get.AsInt() == 2);
 
     //删除key值
@@ -299,7 +446,7 @@ bool Test_Value_Obj()
     {
     Value val_ori(Value::Object);
     Value v1(Value::Object);
-    val_ori.ObjectAdd("key", std::move(v1));
+    val_ori["key"] = std::move(v1);
 
     Value val_copy(val_ori);
     Value val_assg = val_ori;
@@ -313,26 +460,30 @@ bool Test_Value_Obj()
 
     return true;
 }
-/*
 //---------------------------------------------------------------------------
 bool Test_Value_Array()
 {
     //array
-    Value value_none(Value::ARRAY);
-    TEST_ASSERT(value_none.type() == Value::ARRAY);
-    TEST_ASSERT(value_none.val() == "null");
+    Value value_none(Value::Array);
+    TEST_ASSERT(value_none.type() == Value::Array);
 
-    Value value(Value::ARRAY);
-    TEST_ASSERT(value.type() == Value::ARRAY);
-    TEST_ASSERT(value.val() == "null");
-
-    //初始状态
-    TEST_ASSERT(0 == value.ArraySize());
+    Value value(Value::Array);
+    TEST_ASSERT(value.type() == Value::Array);
+    TEST_ASSERT(0 == value.Size());
     for(auto iter=value.ArrayIterBegin(); value.ArrayIterEnd()!=iter; ++iter)
         assert(0);
 
     //添加value
     {
+    Value v1 = 1;
+    Value v2 = -1;
+    Value v3 = 1.0;
+    Value v4 = true;
+    Value v5 = false; 
+    Value v6 = Value(Value::Array);
+    Value v7 = Value(Value::Object);
+    Value v8 = "string";
+
     Value v1(Value::INT);
     v1.set_int(-1);
     Value v2(Value::UINT);
@@ -429,6 +580,7 @@ bool Test_Value_Array()
     return true;
 }
 //---------------------------------------------------------------------------
+/*
 bool Test_Value_Overload()
 {
     {

@@ -13,6 +13,8 @@ namespace json
 {
 
 //---------------------------------------------------------------------------
+const Value Value::NullValue;
+//---------------------------------------------------------------------------
 Value::Value(ValueType type)
 {
     InitPayload(type);
@@ -126,62 +128,81 @@ void Value::Swap(Value& other)
 //---------------------------------------------------------------------------
 void Value::set_int(int64_t value)
 {
-    assert(type() == ValueType::Int);
+    if(type() != ValueType::Int)
+        throw type_error();
+
     value_.int_ = value;
 }
 //---------------------------------------------------------------------------
 void Value::set_uint(uint64_t value)
 {
-    assert(type() == ValueType::UInt);
+    if(type() != ValueType::UInt)
+        throw type_error();
+
     value_.uint_ = value;
 }
 //---------------------------------------------------------------------------
 void Value::set_boolean(bool value)
 {
-    assert(type() == ValueType::Boolean);
+    if(type() != ValueType::Boolean)
+        throw type_error();
+
     value_.bool_ = value;
 }
-
 //---------------------------------------------------------------------------
 void Value::set_double(double value)
 {
-    assert(type() == ValueType::Real);
+    if(type() != ValueType::Real)
+        throw type_error();
+
     value_.real_ = value;
 }
 //---------------------------------------------------------------------------
 void Value::set_str(const char* str)
 {
-    assert(type() == ValueType::String);
+    if(type() != ValueType::String)
+        throw type_error();
+
     *value_.string_ = str;
 }
 //---------------------------------------------------------------------------
 void Value::set_str(const std::string& str)
 {
-    assert(type() == ValueType::String);
+    if(type() != ValueType::String)
+        throw type_error();
+
     *value_.string_ = str;
 }
 //---------------------------------------------------------------------------
 void Value::set_str(std::string&& str)
 {
-    assert(type() == ValueType::String);
+    if(type() != ValueType::String)
+        throw type_error();
+
     *value_.string_ = std::move(str);
 }
 //---------------------------------------------------------------------------
 void Value::set_key(const char* str)
 {
-    assert(type() == ValueType::Key);
+    if(type() != ValueType::Key)
+        throw type_error();
+
     *value_.string_ = str;
 }
 //---------------------------------------------------------------------------
 void Value::set_key(const std::string& str)
 {
-    assert(type() == ValueType::Key);
+    if(type() != ValueType::Key)
+        throw type_error();
+
     *value_.string_ = str;
 }
 //---------------------------------------------------------------------------
 void Value::set_key(std::string&& str)
 {
-    assert(type() == ValueType::Key);
+    if(type() != ValueType::Key)
+        throw type_error();
+
     *value_.string_ = std::move(str);
 }
 //---------------------------------------------------------------------------
@@ -232,67 +253,89 @@ bool Value::IsKey() const
 //---------------------------------------------------------------------------
 int Value::AsInt() const
 {
-    assert(type() == ValueType::Int);
+    if(type() != ValueType::Int)
+        throw type_error();
+
     return static_cast<int>(value_.int_);
 }
 //---------------------------------------------------------------------------
 int64_t Value::AsInt64() const
 {
-    assert(type() == ValueType::Int);
+    if(type() != ValueType::Int)
+        throw type_error();
+
     return value_.int_;
 }
 //---------------------------------------------------------------------------
 unsigned int Value::AsUInt() const
 {
-    assert(type() == ValueType::UInt);
+    if(type() != ValueType::UInt)
+        throw type_error();
+
     return static_cast<unsigned int>(value_.uint_);
 }
 //---------------------------------------------------------------------------
 uint64_t Value::AsUInt64() const
 {
-    assert(type() == ValueType::UInt);
+    if(type() != ValueType::UInt)
+        throw type_error();
+
     return value_.uint_;
 }
 //---------------------------------------------------------------------------
 bool Value::AsBoolean() const
 {
-    assert(type() == ValueType::Boolean);
+    if(type() != ValueType::Boolean)
+        throw type_error();
+
     return value_.bool_;
 }
 //---------------------------------------------------------------------------
 float Value::AsFloat() const
 {
-    assert(type() == ValueType::Real);
+    if(type() != ValueType::Real)
+        throw type_error();
+
     return static_cast<float>(value_.real_);
 }
 //---------------------------------------------------------------------------
 double Value::AsDouble() const
 {
-    assert(type() == ValueType::Real);
+    if(type() != ValueType::Real)
+        throw type_error();
+
     return value_.real_;
 }
 //---------------------------------------------------------------------------
 std::string& Value::AsString()
 {
-    assert(type() == ValueType::String);
+    if(type() != ValueType::String)
+        throw type_error();
+
     return *value_.string_;
 }
 //---------------------------------------------------------------------------
 const std::string& Value::AsString() const
 {
-    assert(type() == ValueType::String);
+    if(type() != ValueType::String)
+        throw type_error();
+
     return *value_.string_;
 }
 //---------------------------------------------------------------------------
 std::string& Value::AsKey()
 {
-    assert(type() == ValueType::Key);
+    if(type() != ValueType::Key)
+        throw type_error();
+
     return *value_.string_;
 }
 //---------------------------------------------------------------------------
 const std::string& Value::AsKey() const
 {
-    assert(type() == ValueType::Key);
+    if(type() != ValueType::Key)
+        throw type_error();
+
     return *value_.string_;
 }
 //---------------------------------------------------------------------------
@@ -311,38 +354,56 @@ size_t Value::Size() const
     }
 }
 //---------------------------------------------------------------------------
-Value& Value::ObjectAdd(const std::string& key, const Value& value)
+Value& Value::operator[](const char* key)
 {
-    return ObjectAdd(std::string(key), Value(value));
+    return (*this)[std::string(key)];
 }
 //---------------------------------------------------------------------------
-Value& Value::ObjectAdd(std::string&& key, const Value& value)
+Value& Value::operator[](const std::string& key)
 {
-    return ObjectAdd(std::string(key), Value(value));
+    return (*this)[std::string(key)];
 }
 //---------------------------------------------------------------------------
-Value& Value::ObjectAdd(const char* key, const Value& value)
+Value& Value::operator[](const std::string&& key)
 {
-    return ObjectAdd(std::string(key), Value(value));
+    if(type() != ValueType::Object)
+        throw new type_error();
+    
+    return (*value_.object_)[std::move(key)];
 }
 //---------------------------------------------------------------------------
-Value& Value::ObjectAdd(const std::string& key, Value&& value)
+const Value& Value::operator[](const char* key) const
 {
-    return ObjectAdd(std::string(key), std::move(value));
-}
-//---------------------------------------------------------------------------
-Value& Value::ObjectAdd(std::string&& key, Value&& value)
-{
-    assert(type() == ValueType::Object);
+    if(type() != ValueType::Object)
+        throw new type_error();
+    
+    ObjectValueIter iter = value_.object_->find(key);
+    if(iter == value_.object_->end())
+        return NullValue;
 
-    auto& ret = (*value_.object_)[std::move(key)];
-    ret = std::move(value);
-    return ret;
+    return iter->second;
 }
 //---------------------------------------------------------------------------
-Value& Value::ObjectAdd(const char* key, Value&& value)
+const Value& Value::operator[](const std::string& key) const
 {
-    return ObjectAdd(std::string(key), std::move(value));
+    return (*this)[key.c_str()];
+}
+//---------------------------------------------------------------------------
+const Value& Value::ObjectGet(const std::string& key) const
+{
+    return ObjectGet(key.c_str());
+}
+//---------------------------------------------------------------------------
+const Value& Value::ObjectGet(const char* key) const
+{
+    if(type() != ValueType::Object)
+        throw new type_error();
+    
+    ObjectValueIter iter = value_.object_->find(key);
+    if(iter == value_.object_->end())
+        return NullValue;
+
+    return iter->second;
 }
 //---------------------------------------------------------------------------
 bool Value::ObjectDel(const std::string& key)
@@ -352,123 +413,57 @@ bool Value::ObjectDel(const std::string& key)
 //---------------------------------------------------------------------------
 bool Value::ObjectDel(const char* key)
 {
-    assert(type() == ValueType::Object);
+    if(type() != ValueType::Object)
+        throw new type_error();
 
     size_t nums = value_.object_->erase(key);
     return (1 == nums);
 }
 //---------------------------------------------------------------------------
-bool Value::ObjectGet(const std::string& key, Value& value) const
+void Value::Reserver(size_t size)
 {
-    return ObjectGet(key.c_str(), value);
-}
-//---------------------------------------------------------------------------
-bool Value::ObjectGet(const char* key, Value& value) const
-{
-    assert(type() == ValueType::Object);
+    if(type() != ValueType::Array)
+        throw type_error();
 
-    auto iter = value_.object_->find(key);
-    if(value_.object_->end() == iter)
-        return false;
-
-    value = iter->second;
-    return true;
-}
-//---------------------------------------------------------------------------
-void Value::ArrayResize(size_t size)
-{
-    assert(type() == ValueType::Array);
-
-    value_.array_->resize(size);
+    value_.array_->reserve(size);
     return;
-}
-//---------------------------------------------------------------------------
-void Value::ArraySet(size_t index, const Value& value)
-{
-    ArraySet(index, Value(value));
-    return;
-}
-//---------------------------------------------------------------------------
-void Value::ArraySet(size_t index, const Value&& value)
-{
-    assert(type() == ValueType::Array);
-
-    value_.array_->at(index) = std::move(value);
-    return;
-}
-//---------------------------------------------------------------------------
-Value& Value::ArrayGet(size_t index)
-{
-    assert(type() == ValueType::Array);
-
-    return value_.array_->at(index);
-}
-//---------------------------------------------------------------------------
-const Value& Value::ArrayGet(size_t index) const
-{
-    assert(type() == ValueType::Array);
-
-    return value_.array_->at(index); 
-}
-//---------------------------------------------------------------------------
-void Value::ArrayAdd(const Value& value)
-{
-    ArrayAdd(Value(value));
-    return;
-}
-//---------------------------------------------------------------------------
-void Value::ArrayAdd(Value&& value)
-{
-    assert(type() == ValueType::Array);
-
-    value_.array_->push_back(std::move(value));
-    return;
-}
-//---------------------------------------------------------------------------
-Value& Value::operator[](const char* key)
-{
-    assert(type() == ValueType::Object);
-    
-    Value& value = (*value_.object_)[key];
-    return value;
-}
-//---------------------------------------------------------------------------
-Value& Value::operator[](const std::string& key)
-{
-    assert(type() == ValueType::Object);
-    
-    Value& value = (*value_.object_)[key];
-    return value;
-}
-//---------------------------------------------------------------------------
-const Value& Value::operator[](const char* key) const
-{
-    assert(type() == ValueType::Object);
-    
-    const Value& value = (*value_.object_)[key];
-    return value;
-}
-//---------------------------------------------------------------------------
-const Value& Value::operator[](const std::string& key) const
-{
-    assert(type() == ValueType::Object);
-    
-    const Value& value = (*value_.object_)[key];
-    return value;
 }
 //---------------------------------------------------------------------------
 Value& Value::operator[](unsigned int index)
 {
-    assert(type() == ValueType::Array);
+    if(type() != ValueType::Array)
+        throw type_error();
+
+    if(Size() <  index)
+        throw std::out_of_range("index out of range");
 
     return (*value_.array_)[index];
 }
 //---------------------------------------------------------------------------
-const Value& Value::operator[](int index) const
+const Value& Value::operator[](unsigned int index) const
 {
-    assert(type() == ValueType::Array);
+    if(type() != ValueType::Array)
+        throw type_error();
+
+    if(Size() <  index)
+        throw std::out_of_range("index out of range");
 
     return (*value_.array_)[index];
+}
+//---------------------------------------------------------------------------
+void Value::ArrayAppend(const Value& value)
+{
+    ArrayAppend(Value(value));
+    return;
+}
+//---------------------------------------------------------------------------
+void Value::ArrayAppend(Value&& value)
+{
+    if(type() != ValueType::Array)
+        throw type_error();
+
+    value_.array_->push_back(std::move(value));
+    return;
 }
 //---------------------------------------------------------------------------
 std::string Value::ToString(bool format)

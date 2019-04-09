@@ -8,12 +8,28 @@
 #include <string>
 #include <assert.h>
 //---------------------------------------------------------------------------
+/*
+ * 类型不对会抛出异常
+ */
+//---------------------------------------------------------------------------
 namespace base
 {
 
 namespace json
 {
 
+//---------------------------------------------------------------------------
+class type_error : public std::logic_error
+{
+public:
+    type_error(const char* msg="type error")
+    :   std::logic_error(msg)
+    {
+    }
+    virtual ~type_error(){}
+};
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 class Value
 {
 public:
@@ -96,52 +112,47 @@ public:
     size_t Size() const;
 
     //ObjectValue
-    Value& ObjectAdd(const std::string& key, const Value& value);
-    Value& ObjectAdd(std::string&& key, const Value& value);
-    Value& ObjectAdd(const char* key, const Value& value);
-    Value& ObjectAdd(const std::string& key, Value&& value);
-    Value& ObjectAdd(std::string&& key, Value&& value);
-    Value& ObjectAdd(const char* key, Value&& value);
+    //如果不存在则添加一个空值
+    Value& operator[](const char* key);
+    Value& operator[](const std::string& key);
+    Value& operator[](const std::string&& key);
+
+    //访问一个值，如果不存在返回NullValue
+    const Value& operator[](const char* key) const;
+    const Value& operator[](const std::string& key) const;
+
+    //访问一个值，如果不存在返回NullValue
+    const Value& ObjectGet(const std::string& key) const;
+    const Value& ObjectGet(const char* key) const;
 
     bool ObjectDel(const std::string& key);
     bool ObjectDel(const char* key);
-
-    bool ObjectGet(const std::string& key, Value& value) const;
-    bool ObjectGet(const char* key, Value& value) const;
 
     ObjectValueIter ObjectIterBegin() const { return value_.object_->begin(); }
     ObjectValueIter ObjectIterEnd() const { return value_.object_->end(); }
 
     //array
-    void ArrayResize(size_t size);
+    void Reserver(size_t size);
 
-    void ArraySet(size_t index, const Value& value);
-    void ArraySet(size_t index, const Value&& value);
+    Value& operator[](unsigned int index);
+    const Value& operator[](unsigned int index) const;
 
-    Value& ArrayGet(size_t index);
-    const Value& ArrayGet(size_t index) const;
-
-    void ArrayAdd(const Value& value);
-    void ArrayAdd(Value&& value);
+    void ArrayAppend(const Value& value);
+    void ArrayAppend(Value&& value);
 
     ArrayValueIter ArrayIterBegin() const { return value_.array_->begin(); }
     ArrayValueIter ArrayIterEnd() const { return value_.array_->end(); }
 
 //重载[]操作符
 public:
-    Value& operator[](const char* key);
-    Value& operator[](const std::string& key);
-    const Value& operator[](const char* key) const;
-    const Value& operator[](const std::string& key) const;
-
-    Value& operator[](unsigned int index); //参数类型原本为size_t,但是index=0和上面的const char* 有冲突，所以定义为int
-    const Value& operator[](int index) const;
-
     bool operator==(const Value& other) const;
 
 //输出Value字符串值
 public:
     std::string ToString(bool format=false);
+
+public:
+    const static Value NullValue;
 
 private:
     void InitPayload(ValueType type);
