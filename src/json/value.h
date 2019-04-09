@@ -110,6 +110,7 @@ public:
     const std::string& AsKey() const;
 
     size_t Size() const;
+    bool Empty() const;
 
     //ObjectValue
     //如果不存在则添加一个空值
@@ -134,11 +135,13 @@ public:
     //array
     void Reserver(size_t size);
 
-    Value& operator[](unsigned int index);
-    const Value& operator[](unsigned int index) const;
+    Value& operator[](int index);
+    const Value& operator[](int index) const;
 
     void ArrayAppend(const Value& value);
     void ArrayAppend(Value&& value);
+
+    void ArrayErase(unsigned int index);
 
     ArrayValueIter ArrayIterBegin() const { return value_.array_->begin(); }
     ArrayValueIter ArrayIterEnd() const { return value_.array_->end(); }

@@ -354,6 +354,21 @@ size_t Value::Size() const
     }
 }
 //---------------------------------------------------------------------------
+bool Value::Empty() const
+{
+    switch(type())
+    {
+        case ValueType::Object:
+            return value_.object_->empty();
+
+        case ValueType::Array:
+            return value_.array_->empty();
+
+        default:
+            return 0;
+    }
+}
+//---------------------------------------------------------------------------
 Value& Value::operator[](const char* key)
 {
     return (*this)[std::string(key)];
@@ -429,23 +444,23 @@ void Value::Reserver(size_t size)
     return;
 }
 //---------------------------------------------------------------------------
-Value& Value::operator[](unsigned int index)
+Value& Value::operator[](int index)
 {
     if(type() != ValueType::Array)
         throw type_error();
 
-    if(Size() <  index)
+    if(Size() < static_cast<size_t>(index))
         throw std::out_of_range("index out of range");
 
     return (*value_.array_)[index];
 }
 //---------------------------------------------------------------------------
-const Value& Value::operator[](unsigned int index) const
+const Value& Value::operator[](int index) const
 {
     if(type() != ValueType::Array)
         throw type_error();
 
-    if(Size() <  index)
+    if(Size() < static_cast<size_t>(index))
         throw std::out_of_range("index out of range");
 
     return (*value_.array_)[index];
@@ -464,6 +479,17 @@ void Value::ArrayAppend(Value&& value)
 
     value_.array_->push_back(std::move(value));
     return;
+}
+//---------------------------------------------------------------------------
+void Value::ArrayErase(unsigned int index)
+{
+    if(type() != ValueType::Array)
+        throw type_error();
+
+    if(Size() < static_cast<size_t>(index))
+        throw std::out_of_range("index out of range");
+
+    value_.array_->erase(value_.array_->begin() + index);
 }
 //---------------------------------------------------------------------------
 std::string Value::ToString(bool format)

@@ -475,7 +475,7 @@ bool Test_Value_Array()
 
     //添加value
     {
-    Value v1 = 1;
+    Value v1 = static_cast<unsigned>(1);
     Value v2 = -1;
     Value v3 = 1.0;
     Value v4 = true;
@@ -484,98 +484,91 @@ bool Test_Value_Array()
     Value v7 = Value(Value::Object);
     Value v8 = "string";
 
-    Value v1(Value::INT);
-    v1.set_int(-1);
-    Value v2(Value::UINT);
-    v2.set_uint(1);
-    Value v3(Value::REAL);
-    v3.set_double(1.1);
-    Value v4(Value::BOOLEAN);
-    v4.set_boolean(true);
-    Value v5(Value::BOOLEAN);
-    v5.set_boolean(false);
-    Value v6(Value::NUL);
-
-    value.ArrayAdd(std::move(v1));
-    value.ArrayAdd(std::move(v2));
-    value.ArrayAdd(std::move(v3));
-    value.ArrayAdd(std::move(v4));
-    value.ArrayAdd(std::move(v5));
-    value.ArrayAdd(std::move(v6));
+    value.ArrayAppend(std::move(v1));
+    value.ArrayAppend(std::move(v2));
+    value.ArrayAppend(std::move(v3));
+    value.ArrayAppend(std::move(v4));
+    value.ArrayAppend(std::move(v5));
+    value.ArrayAppend(std::move(v6));
+    value.ArrayAppend(std::move(v7));
+    value.ArrayAppend(std::move(v8));
     }
 
-    size_t size = value.ArraySize();
-    TEST_ASSERT(6 == size);
+    size_t size = value.Size();
+    TEST_ASSERT(8 == size);
 
     //检查添加的元素
     {
-    Value v1 = value.ArrayGet(0);
-    TEST_ASSERT(v1.get_int() == -1);
+    const Value& v1 = value[0];
+    TEST_ASSERT(v1.AsUInt() == 1);
 
-    Value v2 = value.ArrayGet(1);
-    TEST_ASSERT(v2.get_uint() == 1);
+    const Value& v2 = value[1];
+    TEST_ASSERT(v2.AsInt() == -1);
 
-    Value v3 = value.ArrayGet(2);
-    TEST_ASSERT((v3.get_double() - 1.1)<0.01);
+    const Value& v3 = value[2];
+    TEST_ASSERT((v3.AsFloat()-1.0)<=0.01);
 
-    Value v4 = value.ArrayGet(3);
-    TEST_ASSERT(v4.get_boolean() == true);
+    const Value& v4 = value[3];
+    TEST_ASSERT(v4.AsBoolean() == true);
 
-    Value v5 = value.ArrayGet(4);
-    TEST_ASSERT(v5.get_boolean() == false);
+    const Value& v5 = value[4];
+    TEST_ASSERT(v5.AsBoolean() == false);
 
-    Value v6 = value.ArrayGet(5);
-    TEST_ASSERT(v6.type() == Value::NUL);
+    const Value& v6 = value[5];
+    TEST_ASSERT(v6.IsArray());
+
+    const Value& v7 = value[6];
+    TEST_ASSERT(v7.IsObject());
+
+    const Value& v8 = value[7];
+    TEST_ASSERT(v8.AsString() == "string");
     }
 
     for(auto iter=value.ArrayIterBegin(); value.ArrayIterEnd()!=iter; ++iter)
     {
-        std::cout <<  "value:" << iter->val() << std::endl;
+        //FIXME
+        //std::cout <<  "value:" << iter->val() << std::endl;
     }
 
-    //添加同样key值的会被覆盖
-    Value v1_cover(Value::INT);
-    v1_cover.set_int(2);
-    value.ArraySet(0, std::move(v1_cover));
-    Value v1_cover_get = value.ArrayGet(0);
-    TEST_ASSERT(v1_cover_get.get_int()==2);
+    Value v1_cover = 2;
+    value[0] = std::move(v1_cover);
+    Value v1_cover_get = value[0];
+    TEST_ASSERT(v1_cover_get.AsInt() == 2);
 
     //删除值
-    for(size_t i=0; i<value.ArraySize(); i++)
+    while(!value.Empty())
     {
-        value.ArrayZero(i);
-        TEST_ASSERT(value.ArrayGet(i).val() == "null");
+        value.ArrayErase(0);
     }
+    TEST_ASSERT(value.Empty());
 
-    //重置大小
-    value.ArrayResize(0);
-    value.ArrayResize(10);
-
+    /*
     for(size_t i=0; i<10; i++)
     {
-        Value v(Value::INT);
-        v.set_int(i);
-        value.ArraySet(i, std::move(v));
+        Value v = i;
+        value.ArrayAppend(std::move(v));
     }
 
-    TEST_ASSERT(10 == value.ArraySize());
+    TEST_ASSERT(10 == value.Size());
 
-    for(size_t i=0; i<value.ArraySize(); i++)
+    for(size_t i=0; i<value.Size(); i++)
     {
-        TEST_ASSERT(static_cast<int64_t>(i) == value.ArrayGet(i).get_int());
+        TEST_ASSERT(i == value[static_cast<int>(i)].AsUInt());
     }
 
     //拷贝构造等等
     {
-    Value val(Value::ARRAY);
-    Value v1(Value::ARRAY);
-    value.ArrayAdd(std::move(v1));
+    Value val(Value::Array);
+    Value v1(Value::Array);
+    value.ArrayAppend(std::move(v1));
 
     Value val_copy(val);
     Value val_assg = value;
+    TEST_ASSERT(val_assg.Size() == 11);
     Value val_move_copy(std::move(val_copy));
     Value val_move_asg = std::move(val_assg);
     }
+    */
 
     return true;
 }
@@ -1222,7 +1215,7 @@ int main(int, char**)
 
     Test_Value_Base();
     Test_Value_Obj();
-  //  Test_Value_Array();
+    Test_Value_Array();
   //  Test_Value_Overload();
   //  Test_CharReader();
   //  Test_TokenReader();
