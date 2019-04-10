@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef BASE_MEMORYBLOCK_H_
-#define BASE_MEMORYBLOCK_H_
+#ifndef BASE_MEMORY_BLOCK_H_
+#define BASE_MEMORY_BLOCK_H_
 //---------------------------------------------------------------------------
 #include <vector>
 //---------------------------------------------------------------------------
@@ -11,4 +11,4 @@ using MemoryBlock = std::vector<char>;
 
 }//namespace base
 //---------------------------------------------------------------------------
-#endif //BASE_MEMORYBLOCK_H_
+#endif //BASE_MEMORY_BLOCK_H_

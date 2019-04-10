@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef JSON_SRC_TOKEN_READER_H_
-#define JSON_SRC_TOKEN_READER_H_
+#ifndef BASE_JSON_TOKEN_READER_H_
+#define BASE_JSON_TOKEN_READER_H_
 //---------------------------------------------------------------------------
 #include "value.h"
 #include "char_reader.h"
@@ -84,4 +84,4 @@ private:
 
 }//namespace base
 //---------------------------------------------------------------------------
-#endif //JSON_SRC_TOKEN_READER_H_
+#endif //BASE_JSON_TOKEN_READER_H_

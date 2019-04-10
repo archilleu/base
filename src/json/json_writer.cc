@@ -9,13 +9,29 @@ namespace base
 namespace json
 {
 //---------------------------------------------------------------------------
-std::string JsonWriter::ToString(bool format)
+std::string& JsonWriter::ToString(bool format)
 {
-    std::string str;
-    int         deep = 1;
-    ToString(val_, str, format, deep); 
+    if(format)
+    {
+        if(str_fmt_.empty())
+        {
+            int deep = 1;
+            ToString(val_, str_fmt_, format, deep); 
+        }
 
-    return str;
+        return str_fmt_;
+    }
+    else
+    {
+        if(str_.empty())
+        {
+            int deep = 1;
+            ToString(val_, str_, format, deep); 
+        }
+
+        return str_;
+    }
+
 }
 //---------------------------------------------------------------------------
 bool JsonWriter::ToFile(const std::string& path, bool format)
@@ -54,7 +70,7 @@ void JsonWriter::ToString(const Value& value, std::string& str, bool format, int
         case Value::Real:
         case Value::Boolean:
         case Value::Null:
-            str += value.AsString();
+            str += value.ToString();
             break;
 
         default:
@@ -98,7 +114,7 @@ void JsonWriter::ObjectToString(const Value& value, std::string& str, bool forma
             case Value::Boolean:
             case Value::Null:
             case Value::Key:
-                str += iter->second.AsString();
+                str += iter->second.ToString();
                 break;
 
             default:
@@ -146,7 +162,7 @@ void JsonWriter::ArrayToString(const Value& value, std::string& str, bool format
             case Value::Boolean:
             case Value::Null:
             case Value::Key:
-                str += iter->AsString();
+                str += iter->ToString();
                 break;
 
             default:

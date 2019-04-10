@@ -1,10 +1,8 @@
 //---------------------------------------------------------------------------
 #include "test_inc.h"
+#include "../src/json/json.h"
 #include "../src/json/token_reader.h"
 #include "../src/json/char_reader.h"
-#include "../src/json/json_reader.h"
-#include "../src/json/value.h"
-#include "../src/json/json_writer.h"
 #include "../src/function.h"
 #include <stdio.h>
 #include <fstream>
@@ -166,7 +164,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -174,7 +171,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -182,7 +178,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -190,7 +185,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -198,7 +192,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -206,7 +199,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -214,7 +206,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -222,7 +213,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -230,7 +220,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
 
 
@@ -240,7 +229,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -248,7 +236,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -256,7 +243,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -264,7 +250,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -272,7 +257,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -280,7 +264,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -288,7 +271,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -296,7 +278,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     try
     {
@@ -304,7 +285,6 @@ bool Test_Value_Base()
         TEST_ASSERT(false);
     }catch(type_error e)
     {
-        std::cout << e.what() << std::endl;
     }
     }
 
@@ -542,7 +522,6 @@ bool Test_Value_Array()
     }
     TEST_ASSERT(value.Empty());
 
-    /*
     for(size_t i=0; i<10; i++)
     {
         Value v = i;
@@ -568,110 +547,153 @@ bool Test_Value_Array()
     Value val_move_copy(std::move(val_copy));
     Value val_move_asg = std::move(val_assg);
     }
-    */
 
     return true;
 }
 //---------------------------------------------------------------------------
-/*
 bool Test_Value_Overload()
 {
     {
+    Value v0 = 10;
+    Value v1 = 11;
+    TEST_ASSERT(true == (v0 < v1));
+    TEST_ASSERT(false == (v0 >= v1));
+    TEST_ASSERT(false == (v0 == v1));
+    TEST_ASSERT(true == (v0 != v1));
+    }
+
+    {
+    Value v0 = -10;
+    Value v1 = -11;
+    TEST_ASSERT(false == (v0 < v1));
+    TEST_ASSERT(true == (v0 >= v1));
+    TEST_ASSERT(false == (v0 == v1));
+    TEST_ASSERT(true == (v0 != v1));
+    }
+
+    {
+    Value v0 = 10.0f;
+    Value v1 = 11.0f;
+    TEST_ASSERT(true == (v0 < v1));
+    TEST_ASSERT(false == (v0 >= v1));
+    TEST_ASSERT(false == (v0 == v1));
+    TEST_ASSERT(true == (v0 != v1));
+    }
+
+    {
+    Value v0 = "string";
+    Value v1 = "string1";
+    TEST_ASSERT(true == (v0 < v1));
+    TEST_ASSERT(false == (v0 >= v1));
+    TEST_ASSERT(false == (v0 == v1));
+    TEST_ASSERT(true == (v0 != v1));
+    }
+
+    {
+    Value v0 = true;
+    Value v1 = false;
+    TEST_ASSERT(false == (v0 < v1));
+    TEST_ASSERT(true == (v0 >= v1));
+    TEST_ASSERT(false == (v0 == v1));
+    TEST_ASSERT(true == (v0 != v1));
+    }
+
+    return true;
+}
+//---------------------------------------------------------------------------
+bool Test_Value_ToString()
+{
+    {
+    Value v0 = 1.0;
+    std::cout << v0.ToString() << std::endl;
+
     Value v1 = "string";
-    std::cout << v1.ToString(true) << std::endl;
     std::cout << v1.ToString() << std::endl;
 
     Value v2 = 1;
-    std::cout << v2.ToString(true) << std::endl;
     std::cout << v2.ToString() << std::endl;
 
     Value v3 = -1;
-    std::cout << v3.ToString(true) << std::endl;
     std::cout << v3.ToString() << std::endl;
 
     Value v4 = true;
-    std::cout << v4.ToString(true) << std::endl;
     std::cout << v4.ToString() << std::endl;
 
     Value v5 = false;
-    std::cout << v5.ToString(true) << std::endl;
     std::cout << v5.ToString() << std::endl;
 
     Value v6;
-    std::cout << v6.ToString(true) << std::endl;
     std::cout << v6.ToString() << std::endl;
     }
 
     {
-    std::cout << "object :" << std::endl;
-    Value obj(Value::OBJECT);
+    Value obj(Value::Object);
     obj["k1"] = "string";
     obj["k2"] = 1;
     obj["k3"] = -1;
     obj["k4"] = true;
     obj["k5"] = false;
     obj["k6"] = Value();
-    std::cout << obj.ToString(true) << std::endl;
-    std::cout << obj.ToString() << std::endl;
+    try
+    {
+        std::cout << obj.ToString() << std::endl;
+        TEST_ASSERT(false);
+    }
+    catch(type_error)
+    {}
     }
 
     {
-    std::cout << "array:" << std::endl;
-    Value obj(Value::ARRAY);
-    obj.ArrayResize(6);
+    Value obj(Value::Array);
+    obj.Resize(6);
     obj[0] = Value();
     obj[1] = "string";
     obj[2] = 1;
     obj[3] = -1;
     obj[4] = true;
     obj[5] = false;
-    std::cout << obj.ToString(true) << std::endl;
-    std::cout << obj.ToString() << std::endl;;
+    try
+    {
+        std::cout << obj.ToString() << std::endl;;
+    }catch(type_error)
+    {}
+
     }
 
     {
-    std::cout << "object array:" << std::endl;
-
-    Value array(Value::ARRAY);
-    array.ArrayResize(2);
+    Value array(Value::Array);
+    array.Resize(2);
     array[0] = "string0";
     array[1] = "string1";
 
-    Value object(Value::OBJECT);
+    Value object(Value::Object);
     object["k1"] = 1;
     object["k2"] = 1;
     object["array1"] = std::move(array);
     object["array2"] = array;
-
-    std::cout << object.ToString() << std::endl;
-    std::cout << object.ToString(true) << std::endl;
     }
 
     {
-    std::cout << "object array:" << std::endl;
+    Value array(Value::Array);
+    array.Resize(2);
 
-    Value array(Value::ARRAY);
-    array.ArrayResize(2);
-
-    Value object(Value::OBJECT);
+    Value object(Value::Object);
     object["k1"] = 1;
     object["k2"] = 1;
-    object["array1"] = Value(Value::ARRAY);
-    object["array2"] = Value(Value::ARRAY);
-    object["array1"].ArrayResize(2);
+    object["array1"] = Value(Value::Array);
+    object["array2"] = Value(Value::Array);
+    object["array1"].Resize(2);
     object["array1"][0] = "array1.0";
     object["array1"][1] = "array1.1";
-    object["array2"].ArrayAdd(1);
-    object["array2"].ArrayAdd(-1);
-    object["array2"].ArrayAdd(true);
-    object["array2"].ArrayAdd(false);
-    object["array2"].ArrayAdd(1.1);
-    object["array2"].ArrayAdd("str");
+    object["array2"].ArrayAppend(1);
+    object["array2"].ArrayAppend(-1);
+    object["array2"].ArrayAppend(true);
+    object["array2"].ArrayAppend(false);
+    object["array2"].ArrayAppend(1.1);
+    object["array2"].ArrayAppend("str");
 
     array[0] = object;
     array[1] = object;
-    std::cout << array.ToString() << std::endl;
-    std::cout << array.ToString(true) << std::endl;
     }
 
     return true;
@@ -681,11 +703,15 @@ bool Test_CharReader()
 {
     json::CharReader char_reader;
     std::string str = "abcdefghijklmnopqrstuvwxyz";
-    char_reader.set_dat(std::move(str));
+    char_reader.set_dat(std::string(str));
 
-    for(char c=char_reader.Peek(); true==char_reader.HasMore(); c=char_reader.Next())
+    int index = 0;
+    while(char_reader.HasMore())
     {
-        printf("%c\n", c);
+        char p = char_reader.Peek();
+        char c = char_reader.Next();
+        TEST_ASSERT(p == c);
+        TEST_ASSERT(str[index++] == c);
     }
 
     return true;
@@ -693,21 +719,6 @@ bool Test_CharReader()
 //---------------------------------------------------------------------------
 bool Test_TokenReader()
 {
-    enum
-    {
-        T_DOCUMENT_END = 1,   // 分析结束
-        T_OBJECT_BEGIN,       // obj开始
-        T_OBJECT_END,         // obj结束
-        T_ARRAY_BEGIN,        // array开始
-        T_ARRAY_END,          // array结束
-        T_SEP_COLON,          // 分隔符 :
-        T_SEP_COMMA,          // 分隔符 ,
-        T_STRING,             // 字符串
-        T_BOOLEAN,            // 布尔值
-        T_NUMBER,             // 数值
-        T_NUL,                // 空
-        T_INVALID             // 非法的字符
-    };
     std::string end         = "";
     std::string obj_begin   = "{";
     std::string obj_end     = "}";
@@ -815,10 +826,6 @@ bool Test_TokenReader()
     key.clear();
     err_code = reader3.ReadString(key);
     TEST_ASSERT(true == err_code);
-    std::cout << "---" << std::endl;
-    std::cout << key <<std::endl;
-    std::cout << "---" << std::endl;
-    //TEST_ASSERT(key == str_spe);
 
     err_code = reader2.ReadString(key);
     TEST_ASSERT(false == err_code);
@@ -845,31 +852,28 @@ bool Test_TokenReader()
     reader5.set_dat(std::string(n5));
 
     std::string num;
-    json::Value::TYPE num_type;
+    json::Value::ValueType num_type;
     bool err_code = reader1.ReadNumber(num, num_type);
     TEST_ASSERT(true == err_code);
-    TEST_ASSERT(json::Value::UINT == num_type);
+    TEST_ASSERT(json::Value::UInt == num_type);
     TEST_ASSERT(n1 == num);
     num.clear();
 
     err_code = reader2.ReadNumber(num, num_type);
     TEST_ASSERT(true == err_code);
-    TEST_ASSERT(json::Value::INT == num_type);
+    TEST_ASSERT(json::Value::Int == num_type);
     TEST_ASSERT(n2 == num);
     num.clear();
 
     err_code = reader3.ReadNumber(num, num_type);
     TEST_ASSERT(true == err_code);
-    TEST_ASSERT(json::Value::REAL == num_type);
+    TEST_ASSERT(json::Value::Real == num_type);
     TEST_ASSERT(n3 == num);
     num.clear();
 
     err_code = reader4.ReadNumber(num, num_type);
     TEST_ASSERT(false == err_code);
     num.clear();
-
-    // err_code = reader5.ReadNumber(num);
-    //TEST_ASSERT(false == err_code);
     }
 
     {
@@ -935,7 +939,7 @@ bool Test_Json_KV()
 
     std::string j_str;
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     j_str = json::JsonWriter(root).ToString();
@@ -945,11 +949,11 @@ bool Test_Json_KV()
     //string
     {
     json::JsonReader reader;
-    std::string str = "{\"key1\":\"value2\",\"key2\":\"value2\",\"key3\":\"value3\"}";
+    std::string str = "{\"key1\":\"value1\",\"key2\":\"value2\",\"key3\":\"value3\"}";
 
     std::string j_str;
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     j_str = json::JsonWriter(root).ToString();
@@ -959,10 +963,10 @@ bool Test_Json_KV()
     //number
     {
     json::JsonReader reader;
-    std::string str = "{\"key1\":-1,\"key2\":123,\"key3\":1245.5678}";
+    std::string str = "{\"key1\":-1,\"key2\":123,\"key3\":1245.567800}";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -975,7 +979,7 @@ bool Test_Json_KV()
     std::string str = "{\"key1\":true,\"key2\":false}";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -988,7 +992,7 @@ bool Test_Json_KV()
     std::string str = "{\"key1\":null}";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -1006,7 +1010,7 @@ bool Test_Json_Array()
     std::string str = "[]";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -1016,10 +1020,10 @@ bool Test_Json_Array()
     //杂七杂八
     {
     json::JsonReader reader;
-    std::string str = "[1,\"value2\",null,true,false,1.1,-1]";
+    std::string str = "[1,\"value2\",null,true,false,1.100000,-1]";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -1033,7 +1037,7 @@ bool Test_Json_Array()
     std::string str = "{\"key\":[\"value1\",\"value2\"]}";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -1043,10 +1047,10 @@ bool Test_Json_Array()
     //number
     {
     json::JsonReader reader;
-    std::string str = "{\"key\":[1,-1,1234.5678]}";
+    std::string str = "{\"key\":[1,-1,1234.567800]}";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -1059,7 +1063,7 @@ bool Test_Json_Array()
     std::string str = "{\"key\":[true,false]}";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -1072,7 +1076,7 @@ bool Test_Json_Array()
     std::string str = "{\"key\":[null,null,null]}";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -1090,7 +1094,7 @@ bool Test_Json_Object()
     std::string str = "{\"key\":{\"objkey1\":\"obj_value1\",\"objkey2\":\"obj_value2\"}}";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -1100,10 +1104,10 @@ bool Test_Json_Object()
     //nmber
     {
     json::JsonReader reader;
-    std::string str = "{\"key\":{\"objkey1\":1,\"objkey2\":-1,\"objkey3\":1234.5678}}";
+    std::string str = "{\"key\":{\"objkey1\":1,\"objkey2\":-1,\"objkey3\":1234.567800}}";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -1116,7 +1120,7 @@ bool Test_Json_Object()
     std::string str = "{\"key\":{\"objkey1\":true,\"objkey2\":false}}";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -1129,7 +1133,7 @@ bool Test_Json_Object()
     std::string str = "{\"key\":{\"objkey1\":null,\"objkey2\":null}}";
 
     json::Value root;
-    bool err_code = reader.Parse(str, &root);
+    bool err_code = reader.Parse(str, root);
     TEST_ASSERT(true == err_code);
 
     std::string j_str = json::JsonWriter(root).ToString();
@@ -1139,14 +1143,14 @@ bool Test_Json_Object()
     return true;
 }
 //---------------------------------------------------------------------------
-bool Test_Json_ArrayObject()
+bool Test_Json_File()
 {
     //测试一个文件夹下的数据
 
     const char* test_dir = "../../test/json_file/";
     DIR* dir = opendir(test_dir);
     if(0 == dir)
-        return false;
+        TEST_ASSERT(0);
 
     std::list<std::string> pass_file_list;
     std::list<std::string> fail_file_list;
@@ -1165,29 +1169,26 @@ bool Test_Json_ArrayObject()
     //错误的文件
     for(auto i=fail_file_list.begin(); i!=fail_file_list.end(); ++i)
     {
-        json::Value         root;
-        json::JsonReader    reader;
+        json::Value root;
+        json::JsonReader reader;
         std::string path = test_dir + *i;
-        bool err_code = reader.ParseFile(path, &root);
+        bool err_code = reader.ParseFile(path, root);
         TEST_ASSERT(false == err_code);
-        std::cout << "test fail file:" << path << " sucess" << std::endl;
     }
 
     //正确的文件
     for(auto i=pass_file_list.begin(); i!=pass_file_list.end(); ++i)
     {
-        json::Value         root;
-        json::JsonReader    reader;
+        json::Value root;
+        json::JsonReader reader;
         std::string path = test_dir + *i;
-        bool err_code = reader.ParseFile(path, &root);
+        bool err_code = reader.ParseFile(path, root);
         TEST_ASSERT(true == err_code);
 
         std::string str = json::JsonWriter(root).ToString(true);
         std::string save_file = *i;
         JsonWriter w(root);
-        if(false == w.ToFile(save_file, true))
-            return false;
-        std::cout << "test success file:" << path << " sucess" << std::endl;
+        TEST_ASSERT(w.ToFile(save_file, true))
     }
 
     return true;
@@ -1196,10 +1197,10 @@ bool Test_Json_ArrayObject()
 bool Test_json_Format()
 {
     const char* test_dir = "../../test/json_file/tostring.json";
-    std::string         file    =  test_dir;
-    json::Value         root;
-    json::JsonReader    reader;
-    bool err_code = reader.ParseFile(file, &root);
+    std::string file = test_dir;
+    json::Value root;
+    json::JsonReader reader;
+    bool err_code = reader.ParseFile(file, root);
     if(false == err_code)
         return false;
 
@@ -1207,7 +1208,6 @@ bool Test_json_Format()
     std::cout << format_str << std::endl;
     return true;
 }
-*/
 //---------------------------------------------------------------------------
 int main(int, char**)
 {
@@ -1216,14 +1216,15 @@ int main(int, char**)
     Test_Value_Base();
     Test_Value_Obj();
     Test_Value_Array();
-  //  Test_Value_Overload();
-  //  Test_CharReader();
-  //  Test_TokenReader();
-  //  Test_Json_KV();
-  //  Test_Json_Array();
-  //  Test_Json_Object();
-  //  Test_Json_ArrayObject();
-  //  Test_json_Format();
+    Test_Value_Overload();
+    Test_Value_ToString();
+    Test_CharReader();
+    Test_TokenReader();
+    Test_Json_KV();
+    Test_Json_Array();
+    Test_Json_Object();
+    Test_Json_File();
+    Test_json_Format();
 
     return 0;
 }

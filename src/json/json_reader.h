@@ -1,10 +1,11 @@
 //---------------------------------------------------------------------------
-#ifndef JSON_SRC_READER_H_
-#define JSON_SRC_READER_H_
+#ifndef BASE_JSON_JSON_READER_H_
+#define BASE_JSON_JSON_READER_H_
 //---------------------------------------------------------------------------
 #include <string>
 #include <stack>
 #include <memory>
+#include "value.h"
 //---------------------------------------------------------------------------
 namespace base
 {
@@ -12,7 +13,6 @@ namespace base
 namespace json
 {
 
-class Value;
 class TokenReader;
 
 class JsonReader
@@ -22,22 +22,24 @@ public:
     ~JsonReader();
 
     //解析字符串,以\0作为结束符
-    bool Parse(const std::string& str, Value* root);
-    bool Parse(std::string&& str, Value* root);
-    bool Parse(const char* str, Value* root);
+    bool Parse(const std::string& str, Value& root);
+    bool Parse(std::string&& str, Value& root);
+    bool Parse(const char* str, Value& root);
     
     //解析内存数据,可以不用\0为结束符
-    bool Parse(const char* str, size_t len, Value* root);
+    bool Parse(const char* str, size_t len, Value& root);
 
     //解析JSON格式文件
-    bool ParseFile(const std::string& path, Value* root);
-    bool ParseFile(const char* path, Value* root);
+    bool ParseFile(const std::string& path, Value& root);
+    bool ParseFile(const char* path, Value& root);
 
 private:
-    bool _Parse(Value* root);
+    bool _Parse(Value& root);
 
     //当前是否有对应的状态
     bool HasStatus(int status) { return (cur_status_ & status); }
+
+    Value ReadNumber();
 
 private:
     bool CaseStatusObjectBegin();
@@ -74,4 +76,4 @@ private:
 
 }//namespace base
 //---------------------------------------------------------------------------
-#endif //JSON_SRC_READER_H_
+#endif //BASE_JSON_JSON_READER_H_

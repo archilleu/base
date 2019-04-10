@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <assert.h>
 #include "value.h"
-#include "json_writer.h"
 //---------------------------------------------------------------------------
 namespace base
 {
@@ -105,8 +104,7 @@ Value& Value::operator=(const Value& other)
 //---------------------------------------------------------------------------
 Value& Value::operator=(Value&& other)
 {
-    InitPayload(ValueType::Null);
-    Swap(other);
+    other.Swap(*this);
     return *this;
 }
 //---------------------------------------------------------------------------
@@ -444,6 +442,15 @@ void Value::Reserver(size_t size)
     return;
 }
 //---------------------------------------------------------------------------
+void Value::Resize(size_t size)
+{
+    if(type() != ValueType::Array)
+        throw type_error();
+
+    value_.array_->resize(size);
+    return;
+}
+//---------------------------------------------------------------------------
 Value& Value::operator[](int index)
 {
     if(type() != ValueType::Array)
@@ -492,9 +499,109 @@ void Value::ArrayErase(unsigned int index)
     value_.array_->erase(value_.array_->begin() + index);
 }
 //---------------------------------------------------------------------------
-std::string Value::ToString(bool format)
+std::string Value::ToString() const
 {
-    return JsonWriter(*this).ToString(format);
+    switch(type())
+    {
+        case Number:
+        case ValueType::Object:
+        case ValueType::Array:
+            throw type_error();
+
+        case ValueType::Key:
+        case ValueType::String:
+            return *value_.string_;
+
+        case Boolean:
+            return value_.bool_ ? "true" : "false";
+
+        case Int:
+            {
+                char buffer[64];
+                snprintf(buffer, sizeof(buffer), "%" PRId64 "", value_.int_);
+                return buffer;
+            }
+
+        case UInt:
+            {
+                char buffer[64];
+                snprintf(buffer, sizeof(buffer), "%" PRIu64 "", value_.uint_);
+                return buffer;
+            }
+
+        case Real:
+            {
+                char buffer[64];
+                snprintf(buffer, sizeof(buffer), "%lf", value_.real_);
+                return buffer;
+            }
+
+        case Null:
+            return "null";
+
+        default:
+            assert(0);
+    }
+}
+//---------------------------------------------------------------------------
+bool Value::operator<(const Value& other) const
+{
+    if(type() != other.type())
+        return false;
+
+    switch(type())
+    {
+        case ValueType::Object:
+            return ((value_.object_->size()<other.value_.object_->size()) &&
+                (*value_.object_<*other.value_.object_));
+
+        case ValueType::Array:
+            return ((value_.array_->size()<other.value_.array_->size()) &&
+                (*value_.array_<*other.value_.array_));
+
+        case ValueType::Key:
+        case ValueType::String:
+            return (*value_.string_<*other.value_.string_);
+
+        case Boolean:
+            return (value_.bool_<other.value_.bool_);
+
+        case Int:
+            return (value_.int_<other.value_.int_);
+
+        case UInt:
+            return (value_.uint_<other.value_.uint_);
+
+        case Real:
+            return (value_.real_<other.value_.real_);
+
+        case Number:
+            return ((value_.int_<other.value_.int_)||
+                    (value_.uint_<other.value_.uint_)||
+                    (value_.real_<other.value_.real_));
+        case Null:
+            return true;
+
+        default:
+            assert(0);
+    }
+
+    return false;
+}
+//---------------------------------------------------------------------------
+bool Value::operator<=(const Value& other) const
+{
+    return !(other < *this);
+}
+//---------------------------------------------------------------------------
+bool Value::operator>=(const Value& other) const
+{
+    return !(*this < other);
+}
+//---------------------------------------------------------------------------
+bool Value::operator>(const Value& other) const
+{
+    return !(other < *this);
 }
 //---------------------------------------------------------------------------
 bool Value::operator==(const Value& other) const
@@ -543,6 +650,11 @@ bool Value::operator==(const Value& other) const
     }
 
     return false;
+}
+//---------------------------------------------------------------------------
+bool Value::operator!=(const Value& other) const
+{
+    return !(*this == other);
 }
 //---------------------------------------------------------------------------
 void Value::InitPayload(ValueType value_type)

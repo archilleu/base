@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef JSON_SRC_VALUE_H_
-#define JSON_SRC_VALUE_H_
+#ifndef BASE_JSON_VALUE_H_
+#define BASE_JSON_VALUE_H_
 //---------------------------------------------------------------------------
 #include <inttypes.h>
 #include <vector>
@@ -134,6 +134,7 @@ public:
 
     //array
     void Reserver(size_t size);
+    void Resize(size_t size);
 
     Value& operator[](int index);
     const Value& operator[](int index) const;
@@ -148,11 +149,16 @@ public:
 
 //重载[]操作符
 public:
+    bool operator<(const Value& other) const;
+    bool operator<=(const Value& other) const;
+    bool operator>=(const Value& other) const;
+    bool operator>(const Value& other) const;
     bool operator==(const Value& other) const;
+    bool operator!=(const Value& other) const;
 
-//输出Value字符串值
+//输出基本类型Value字符串值
 public:
-    std::string ToString(bool format=false);
+    std::string ToString() const;
 
 public:
     const static Value NullValue;
@@ -182,4 +188,4 @@ private:
 
 }//namespace base
 //---------------------------------------------------------------------------
-#endif //JSON_SRC_VALUE_H_
+#endif //BASE_JSON_VALUE_H_

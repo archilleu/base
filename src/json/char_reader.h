@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef JSON_SRC_CHAR_READER_H_
-#define JSON_SRC_CHAR_READER_H_
+#ifndef BASE_JSON_CHAR_READER_H_
+#define BASE_JSON_CHAR_READER_H_
 //---------------------------------------------------------------------------
 #include <string>
 #include <assert.h>
@@ -63,4 +63,4 @@ private:
 
 }//namespace base
 //---------------------------------------------------------------------------
-#endif //JSON_SRC_CHAR_READER_H_
+#endif //BASE_JSON_CHAR_READER_H_
