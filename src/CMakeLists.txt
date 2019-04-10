@@ -33,6 +33,7 @@ set(HEADERS
 
 #json
 set(HEADERS_JSON
+    json/json.h
     json/json_reader.h
     json/json_writer.h
     json/value.h
