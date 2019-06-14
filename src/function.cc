@@ -668,4 +668,43 @@ bool DocumentExist(const char* pathname)
     return true;
 }
 //---------------------------------------------------------------------------
+time_t ParseHTTPDatetime(const char* datetime)
+{
+    //https://www.jianshu.com/p/e0dd536dd3e4
+    //rfc822,   /* Tue, 10 Nov 2002 23:50:13   */
+    //rfc850,   /* Tuesday, 10-Dec-02 23:50:13 */
+    //isoc      /* Tue Dec 10 23:50:13 2002    */
+    const static char* rfc822 = "%a, %d %b %Y %H:%M:%S GMT";
+    const static char* rfc850 = "%A, %d-%b-%y %H:%M:%S GMT";
+    const static char* isoc = "%a %b %d %H:%M:%S %Y";
+
+    struct tm tm;
+    memset(&tm, 0, sizeof(struct tm));
+    char* rc = strptime(datetime, rfc822, &tm);
+    if(0 == rc)
+    {
+        rc = strptime(datetime, rfc850, &tm);
+        if(0 == rc)
+        {
+            rc = strptime(datetime, isoc, &tm);
+            if(0 == rc)
+                return 0;
+        }
+    }
+
+    return mktime(&tm);
+}
+//---------------------------------------------------------------------------
+std::string FormatHTTPDatetime(time_t time)
+{
+    const static char* rfc822 = "%a, %d %b %Y %H:%M:%S GMT";
+    char buffer[32];
+    struct tm tm;
+    localtime_r(&time, &tm);
+    if(0 == strftime(buffer, sizeof(buffer), rfc822, &tm))
+        return "";
+
+    return buffer;
+}
+//---------------------------------------------------------------------------
 }//namespace base

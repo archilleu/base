@@ -187,6 +187,26 @@ bool Test_File()
     return true; 
 }
 //---------------------------------------------------------------------------
+bool Test_HTTPDatetime()
+{
+    const char* rfc822 = "Fri, 14 Jun 2019 23:50:13 GMT";
+    const char* rfc850 = "Friday, 14-Jun-19 23:50:13 GMT";
+    const char* isoc = "Fri Jun 14 23:50:13 2019";
+
+    time_t t1 = ParseHTTPDatetime(rfc822);
+    time_t t2 = ParseHTTPDatetime(rfc850);
+    time_t t3 = ParseHTTPDatetime(isoc);
+
+    std::string s1 = FormatHTTPDatetime(t1);
+    std::string s2 = FormatHTTPDatetime(t2);
+    std::string s3 = FormatHTTPDatetime(t3);
+    TEST_ASSERT(s1 == rfc822);
+    std::cout << "rfc850: " << s2 << std::endl;
+    std::cout << "isoc: " << s3 << std::endl;
+
+    return true;
+}
+//---------------------------------------------------------------------------
 int main(int, char**)
 {
     TestTitle();
@@ -201,6 +221,7 @@ int main(int, char**)
     Test_Path();
     Test_Document();
     Test_File();
+    Test_HTTPDatetime();
 
     return 0;
 }
