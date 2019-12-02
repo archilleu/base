@@ -6,6 +6,9 @@ cmake_minimum_required (VERSION 2.8)
 aux_source_directory(. DIR_TESTS)
 #---------------------------------------------------------------------------
 #generate test
+set(TEST_any test_any)
+add_executable(${TEST_any} test_any.cc)
+
 set(TEST_function test_function)
 add_executable(${TEST_function} test_function.cc)
 
@@ -41,6 +44,8 @@ add_executable(${TEST_json} test_json.cc)
 #---------------------------------------------------------------------------
 #add link lib
 set(LIBNAME base)
+target_link_libraries(${TEST_any} ${LIBNAME})
+
 target_link_libraries(${TEST_function} ${LIBNAME})
 
 target_link_libraries(${TEST_computer_info} ${LIBNAME})
@@ -60,6 +65,8 @@ target_link_libraries(${TEST_timestamp} ${LIBNAME})
 target_link_libraries(${TEST_json} ${LIBNAME})
 #---------------------------------------------------------------------------
 #add test
+add_test(${TEST_any} ${EXECUTABLE_OUTPUT_PATH}/${TEST_any})
+
 add_test(${TEST_function} ${EXECUTABLE_OUTPUT_PATH}/${TEST_function}
     WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
 
