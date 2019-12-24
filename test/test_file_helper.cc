@@ -46,7 +46,7 @@ bool TestAppend()
     file.Open(path);
     
     for(int i=0; i<100; i++)
-        TEST_ASSERT(true == file.Write(info1, size));
+        file.Write(info1, size);
     file.Flush();
     size_t file_size = file.Size();
     file.Close();
@@ -69,7 +69,7 @@ bool TestAppend()
     TEST_ASSERT(file_size == file.Size());
     for(int i=0; i<100; i++)
     {
-        TEST_ASSERT(true == file.Write(info2, size));
+        file.Write(info2, size);
     }
     file.Flush();
     TEST_ASSERT(file_size*2 == file.Size());
@@ -113,7 +113,7 @@ bool TestTruncate()
     file.Open(path, true);
     
     for(int i=0; i<100; i++)
-        TEST_ASSERT(true == file.Write(info1, size));
+        file.Write(info1, size);
     file.Flush();
     size_t file_size = file.Size();
     file.Close();
@@ -136,7 +136,7 @@ bool TestTruncate()
     TEST_ASSERT(0 == file.Size());
     for(int i=0; i<100; i++)
     {
-        TEST_ASSERT(true == file.Write(info2, size));
+        file.Write(info2, size);
     }
     file.Flush();
     TEST_ASSERT(file_size == file.Size());
@@ -159,6 +159,44 @@ bool TestTruncate()
     return true;
 }
 //---------------------------------------------------------------------------
+void TestReadWritePeek()
+{
+    const std::string s = "string";
+    int8_t int8 = 8;
+    int16_t int16 = 16;
+    int32_t int32 = 32;
+    int64_t int64 = 64;
+    const static char* path = "/tmp/read_file";
+
+    FileDelete(path);
+
+    {
+    FileHelper file;
+    file.Open(path);
+    file.Write(s);
+    file.Write(int8);
+    file.Write(int16);
+    file.Write(int32);
+    file.Write(int64);
+    }
+
+    {
+    FileHelper file;
+    file.Open(path);
+    TEST_ASSERT(s == file.PeekString(s.length()));
+    TEST_ASSERT(s == file.ReadString(s.length()));
+    TEST_ASSERT(int8 == file.PeekInt8());
+    TEST_ASSERT(int8 == file.ReadInt8());
+    TEST_ASSERT(int16 == file.PeekInt16());
+    TEST_ASSERT(int16 == file.ReadInt16());
+    TEST_ASSERT(int32 == file.PeekInt32());
+    TEST_ASSERT(int32 == file.ReadInt32());
+    TEST_ASSERT(int64 == file.PeekInt64());
+    TEST_ASSERT(int64 == file.ReadInt64());
+    }
+
+}
+//---------------------------------------------------------------------------
 int main(int, char**)
 {
     TestTitle();
@@ -166,6 +204,7 @@ int main(int, char**)
     TestIllegal();
     TestAppend();
     TestTruncate();
+    TestReadWritePeek();
 
     return 0;
 }
