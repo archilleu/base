@@ -79,8 +79,6 @@ bool Test_Base64()
     std::string dat2 = "Man is distinguished, not only by his reason, but by this singular passion from other animals, which is a lust of the mind, that by a perseverance of delight in the continued and indefatigable generation of knowledge, exceeds the short vehemence of any carnal pleasure.";
     std::string result1 = Base64_encode(dat1.c_str(), dat1.size());
     std::string result2 = Base64_encode(dat2.c_str(), dat2.size());
-    std::cout << "base64:" << result1 << std::endl;
-    std::cout << "base64:" << result2 << std::endl;
     std::string std_result1 = "Q3JlYXRlIGFuIGFjY291bnQgb3IgbG9nIGludG8gRmFjZWJvb2suIENvbm5lY3Qgd2l0aCBmcmllbmRzLCBmYW1pbHkgYW5kIG90aGVyIHBlb3BsZSB5b3Uga25vdy4gU2hhcmUgcGhvdG9zIGFuZCB2aWRlb3MsIHNlbmQgbWVzc2FnZXMgYW5kIGdldCB1cGRhdGVzLg==";
     std::string std_result2 = "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=";
 
@@ -97,8 +95,6 @@ bool Test_Base64()
 
     MemoryBlock mb_result1 = Base64_decode(result1);
     MemoryBlock mb_result2 = Base64_decode(result2);
-    std::cout << mb_result1.data() << std::endl;
-    std::cout << mb_result2.data() << std::endl;
 
     TEST_ASSERT(mb_result1 == MemoryBlock(dat1.begin(), dat1.begin()+dat1.length()));
     TEST_ASSERT(mb_result2 == MemoryBlock(dat2.begin(), dat2.begin()+dat2.length()));
