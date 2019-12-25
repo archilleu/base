@@ -33,6 +33,7 @@ public:
     void Write(int32_t dat);
     void Write(int64_t dat);
 
+    size_t Read(void* dat, size_t len);
     std::string ReadString(size_t len);
     int8_t ReadInt8();
     int16_t ReadInt16();

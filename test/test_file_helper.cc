@@ -15,7 +15,7 @@ bool TestIllegal()
     }
     catch(std::exception& e)
     {
-        std::cout << e.what() << std::endl;
+        std::cout << "success: " << e.what() << std::endl;
     }
 
     FileHelper file2;
@@ -25,7 +25,7 @@ bool TestIllegal()
     }
     catch(std::exception& e)
     {
-        std::cout << e.what() << std::endl;
+        std::cout << "success: " << e.what() << std::endl;
     }
 
     return true;
@@ -174,6 +174,7 @@ void TestReadWritePeek()
     FileHelper file;
     file.Open(path);
     file.Write(s);
+    file.Write(s);
     file.Write(int8);
     file.Write(int16);
     file.Write(int32);
@@ -183,6 +184,8 @@ void TestReadWritePeek()
     {
     FileHelper file;
     file.Open(path);
+    std::string buffer(s.length(), 0);
+    TEST_ASSERT(s.length() == file.Read(const_cast<char*>(buffer.data()), s.length()));
     TEST_ASSERT(s == file.PeekString(s.length()));
     TEST_ASSERT(s == file.ReadString(s.length()));
     TEST_ASSERT(int8 == file.PeekInt8());

@@ -85,6 +85,17 @@ void FileHelper::Write(int64_t dat)
     Write(reinterpret_cast<void*>(&dat), sizeof(dat));
 }
 //---------------------------------------------------------------------------
+size_t FileHelper::Read(void* dat, size_t len)
+{
+    if(fp_)
+    {
+        size_t rlen = ::fread_unlocked(dat, 1, len, fp_);
+        return rlen;
+    }
+
+    throw std::fstream::failure("read failed");
+}
+//---------------------------------------------------------------------------
 std::string FileHelper::ReadString(size_t len)
 {
     if(fp_)
