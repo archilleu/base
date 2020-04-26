@@ -18,6 +18,7 @@ std::shared_ptr<Logger> Logger::stdout_logger_st()
     SinkPtr ptr = std::make_shared<ConsoleSinkST>();
     return std::make_shared<Logger>(ptr);
 }
+//---------------------------------------------------------------------------
 std::shared_ptr<Logger> Logger::file_logger_mt(const std::string& path, bool daily)
 {
     SinkPtr ptr = std::make_shared<FileSinkMT>(path, daily);

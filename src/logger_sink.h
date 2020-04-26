@@ -1,13 +1,12 @@
 //---------------------------------------------------------------------------
-#ifndef BASE_SINK_H_
-#define BASE_SINK_H_
+#ifndef BASE_LOGGER_SINK_H_
+#define BASE_LOGGER_SINK_H_
 //---------------------------------------------------------------------------
 #include <cstring>
 #include <sys/types.h>
 #include <unistd.h>
 #include <mutex>
 #include <ctime>
-#include <cassert>
 #include "logger.h"
 #include "file_helper.h"
 #include "function.h"
@@ -37,7 +36,7 @@ public:
     Sink(){}
     virtual ~Sink(){}
     virtual void log(Logger::Level lv, const char* msg) =0;
-    virtual void flush(){}
+    virtual void flush() =0;
 };
 //---------------------------------------------------------------------------
 template<class Mutex>
@@ -90,7 +89,7 @@ public:
         daily_(daily)
     {
         time_t t = time(0);
-        t -= kSecPerDate;
+        t -= kSecPerDate;       //获取昨天时间，配合下面3个0项可以得到昨天0点时刻，用来判断今天是否已过
         struct tm now;
         gmtime_r(&t, &now);;
         now.tm_hour = 0;
@@ -100,7 +99,7 @@ public:
         char buffer[4096];
         //文件名格式:进程名.日期.主机名字.进程id.log
         snprintf(buffer, sizeof(buffer), "%s/%s.%4d%02d%02d.%s.%d.log", path_.c_str(),
-                kExename.c_str(), now.tm_year+1990, now.tm_mon+1, now.tm_mday,
+                kExename.c_str(), now.tm_year+1900, now.tm_mon+1, now.tm_mday+1/*今天0点*/,
                 kHostname.c_str(), kPid);
         file_path_ = buffer;
 
@@ -152,7 +151,7 @@ private:
                 char buffer[4096];
                 //文件名:进程名字.创建时间.机器名字.进程id.后缀
                 snprintf(buffer, sizeof(buffer), "%s/%s.%4d%02d%02d.%s.%d.log", path_.c_str(),
-                        kExename.c_str(), now.tm_year+1990, now.tm_mon+1, now.tm_mday,
+                        kExename.c_str(), now.tm_year+1900, now.tm_mon+1, now.tm_mday,
                         kHostname.c_str(), kPid);
                 file_path_ = buffer;
             }
@@ -164,7 +163,7 @@ private:
 private:
     std::string path_;
     bool daily_;
-    time_t time_;
+    time_t time_;   //昨天0点，判断今天是否已过
     std::string file_path_;
     std::shared_ptr<FileHelper> file_;
 
@@ -190,4 +189,4 @@ using FileSinkST = FileSink<null_mutex>;
 
 }//namespace base
 //---------------------------------------------------------------------------
-#endif //BASE_SINK_H_
+#endif //BASE_LOGGER_SINK_H_
